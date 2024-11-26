@@ -26,6 +26,16 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [
+    
+    'block/compviz:myaddinstance' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => [
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
+        'clonepermissionsfrom' => 'moodle/my:manageblocks'
+    ],
 
     'block/compviz:show_graph' => [
         'riskbitmask' => RISK_PERSONAL,

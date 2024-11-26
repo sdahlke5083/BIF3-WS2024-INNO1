@@ -55,7 +55,7 @@ class block_compviz extends block_base {
         if (!empty($this->config->text)) {
             $this->content->text = $this->config->text;
         } else {
-            $text = 'Please define the content text in /blocks/compviz/block_compviz.php.';
+            $text = 'Das ist ein Test um zu sehen, ob der Block funktioniert.';
             $this->content->text = $text;
         }
 
