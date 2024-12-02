@@ -35,14 +35,27 @@ $capabilities = [
             'manager' => CAP_ALLOW,
         ],
         'clonepermissionsfrom' => 'moodle/my:manageblocks'
+
     ],
 
     'block/compviz:show_graph' => [
         'riskbitmask' => RISK_PERSONAL,
-        'captype' => 'view',
-        'contextlevel' => context_block,
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => [
             'user' => CAP_ALLOW,
         ],
+    ],
+
+
+    'block/compviz:addinstance' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => [
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
+        'clonepermissionsfrom' => 'moodle/site:manageblocks'
+        
     ],
 ];
