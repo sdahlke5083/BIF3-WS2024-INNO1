@@ -102,21 +102,20 @@ class block_compviz extends block_base {
         $background_color = $this->get_progress_color($progress);
     
         // Fortschrittsbalken-Inhalt: Label und Pfeil (bei Hauptskills)
-        $content = '<span style="flex-grow: 1;">' . $label . '</span>';
+        $content = '<div style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; position: relative;">
+                        <span style="font-size: 10px;">' . $label . '</span>'; // Text mittig
         if ($is_main_skill) {
-            $content .= '<span style="position: absolute; right: 10px; font-size: 16px; cursor: pointer; z-index: 2;">▼</span>'; // Dropdown-Pfeil innerhalb der Progressbar
+            $content .= '<span style="position: absolute; right: 10px; font-size: 12px; cursor: pointer;">▼</span>'; // Dropdown-Pfeil rechts
         }
+        $content .= '</div>';
     
-        return '<div style="display: flex; align-items: center; border: 1px solid #ccc; border-radius: 5px; background: #f4f4f4; width: 100%; height: 25px; position: relative;">
+        return '<div style="margin-bottom: 10px; display: flex; align-items: center; border: 1px solid #ccc; border-radius: 5px; background: #f4f4f4; width: 100%; height: 35px; position: relative;">
                     <div style="width: ' . $bar_width . '; height: 100%; background-color: ' . $background_color . '; position: absolute; top: 0; left: 0; z-index: 0;"></div>
-                    <div style="position: relative; z-index: 1; display: flex; align-items: center; padding-left: 10px; width: 100%; color: #333; font-weight: normal; font-size: 12px;">
+                    <div style="position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; width: 100%; color: #333; font-weight: normal; font-size: 12px;">
                         ' . $content . '
                     </div>
                 </div>';
     }
-    
-    
-    
     
 
     private function render_vertical_bar($label, $progress) {
