@@ -21,23 +21,14 @@
  * @copyright   2024 BIF-INNO-Group10
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 class block_compviz extends block_base {
 
-    /**
-     * Initializes class member variables.
-     */
     public function init() {
-        // Needed by Moodle to differentiate between blocks.
         $this->title = get_string('pluginname', 'block_compviz');
     }
 
-    /**
-     * Returns the block contents.
-     *
-     * @return stdClass The block contents.
-     */
     public function get_content() {
-
         if ($this->content !== null) {
             return $this->content;
         }
@@ -48,53 +39,118 @@ class block_compviz extends block_base {
         }
 
         $this->content = new stdClass();
-        $this->content->items = array();
-        $this->content->icons = array();
-        $this->content->footer = '';
 
-        if (!empty($this->config->text)) {
-            $this->content->text = $this->config->text;
-        } else {
-            $text = 'Das ist ein Test um zu sehen, ob der Block funktioniert.';
-            $this->content->text = $text;
-        }
+        // Diagramm mit flexibler Platzierung rendern
+        $this->content->text = $this->render_skills_chart();
 
         return $this->content;
     }
 
-    /**
-     * Defines configuration data.
-     *
-     * The function is called immediately after init().
-     */
-    public function specialization() {
+    private function render_skills_chart() {
+        global $OUTPUT;
 
-        // Load user defined title and make sure it's never empty.
-        if (empty($this->config->title)) {
-            $this->title = get_string('pluginname', 'block_compviz');
+        $skills = [
+            'Alle Skills' => 75,
+            'Skill - Git' => [
+                'Fortschritt' => 50,
+                'Sub-Skills' => [
+                    'Initialisierung' => 100,
+                    'Branch' => 25
+                ]
+            ],
+            'Skill - Conflict Handling' => [
+                'Fortschritt' => 100,
+                'Sub-Skills' => []
+            ]
+        ];
+
+        $html = '<div style="display: flex; align-items: flex-start; gap: 20px;">';
+        $html .= $this->render_vertical_bar('Alle Skills', $skills['Alle Skills']);
+        $html .= '<div style="flex: 1;">';
+
+        foreach ($skills as $skill => $data) {
+            if ($skill === 'Alle Skills') {
+                continue;
+            }
+            $html .= $this->render_collapsible_skill($skill, $data['Fortschritt'], $data['Sub-Skills']);
+        }
+
+        $html .= '</div>'; // Skills-Container
+        $html .= '</div>'; // Hauptcontainer
+
+        return $html;
+    }
+
+    private function render_collapsible_skill($label, $progress, $subskills) {
+        // Fortschrittsbalken mit dem Marker (Pfeil) innerhalb der Progressbar
+        $html = '<details>';
+        $html .= '<summary style="margin: 0; padding: 0; list-style: none;">' . $this->render_horizontal_bar($label, $progress, true) . '</summary>';
+        if (!empty($subskills)) {
+            $html .= '<div style="margin-left: 20px;">';
+            foreach ($subskills as $subskill => $subprogress) {
+                $html .= $this->render_horizontal_bar($subskill, $subprogress, false);
+            }
+            $html .= '</div>';
+        }
+        $html .= '</details>';
+    
+        return $html;
+    }
+    
+    private function render_horizontal_bar($label, $progress, $is_main_skill = false) {
+        $bar_width = $progress . '%';
+        $background_color = $this->get_progress_color($progress);
+    
+        // Fortschrittsbalken-Inhalt: Label und Pfeil (bei Hauptskills)
+        $content = '<span style="flex-grow: 1;">' . $label . '</span>';
+        if ($is_main_skill) {
+            $content .= '<span style="position: absolute; right: 10px; font-size: 16px; cursor: pointer; z-index: 2;">▼</span>'; // Dropdown-Pfeil innerhalb der Progressbar
+        }
+    
+        return '<div style="display: flex; align-items: center; border: 1px solid #ccc; border-radius: 5px; background: #f4f4f4; width: 100%; height: 25px; position: relative;">
+                    <div style="width: ' . $bar_width . '; height: 100%; background-color: ' . $background_color . '; position: absolute; top: 0; left: 0; z-index: 0;"></div>
+                    <div style="position: relative; z-index: 1; display: flex; align-items: center; padding-left: 10px; width: 100%; color: #333; font-weight: normal; font-size: 12px;">
+                        ' . $content . '
+                    </div>
+                </div>';
+    }
+    
+    
+    
+    
+
+    private function render_vertical_bar($label, $progress) {
+        $bar_height = $progress . '%';
+        $background_color = $this->get_progress_color($progress);
+
+        return '<div style="text-align: center;">
+            <div style="font-size: 12px; color: #333;">' . $label . '</div>
+            <div style="width: 30px; height: 150px; border: 1px solid #ccc; border-radius: 5px; background: #f4f4f4; position: relative;">
+                <div style="height: ' . $bar_height . '; width: 100%; background-color: ' . $background_color . '; position: absolute; bottom: 0; display: flex; align-items: flex-end; justify-content: center; color: #333; font-weight: normal; font-size: 12px; padding-bottom: 5px;">
+                    ' . $progress . '%
+                </div>
+            </div>
+        </div>';
+    }
+
+    private function get_progress_color($progress) {
+        if ($progress < 50) {
+            return '#dc3545'; // Rot
+        } elseif ($progress < 75) {
+            return '#ffc107'; // Gelb
         } else {
-            $this->title = $this->config->title;
+            return '#28a745'; // Grün
         }
     }
 
-    /**
-     * Enables global configuration of the block in settings.php.
-     *
-     * @return bool True if the global configuration is enabled.
-     */
     public function has_config() {
         return true;
     }
 
-    /**
-     * Sets the applicable formats for the block.
-     *
-     * @return string[] Array of pages and permissions.
-     */
     public function applicable_formats() {
-        return array(
+        return [
             'course-view' => true,
             'site-index' => false,
-        );
+        ];
     }
 }
