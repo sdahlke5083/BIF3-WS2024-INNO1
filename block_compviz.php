@@ -22,7 +22,6 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$PAGE->requires->js_call_amd('block_compviz/mymodule', 'init');
 
 class block_compviz extends block_base {
 
@@ -49,6 +48,8 @@ class block_compviz extends block_base {
         // Diagramm mit flexibler Platzierung (da eigene Aufteilung) rendern
         $this->content->text = $this->render_skills_chart();
 
+        global $PAGE;
+        $PAGE->requires->js_call_amd('block_compviz/mymodule', 'init'); 
         return $this->content;
     }
 
