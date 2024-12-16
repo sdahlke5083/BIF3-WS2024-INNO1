@@ -22,13 +22,20 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$PAGE->requires->js_call_amd('block_compviz/mymodule', 'init');
+
 class block_compviz extends block_base {
 
+    //Initialisiert den Block & setzt Titel
     public function init() {
         $this->title = get_string('pluginname', 'block_compviz');
+        //ruft Namen des Plugins ab
     }
 
+    //Erstellt Inhalt des Blocks
     public function get_content() {
+
+        //Existiert Inhalt vom Block schon?
         if ($this->content !== null) {
             return $this->content;
         }
@@ -39,35 +46,56 @@ class block_compviz extends block_base {
         }
 
         $this->content = new stdClass();
-
-        // Diagramm mit flexibler Platzierung rendern
+        // Diagramm mit flexibler Platzierung (da eigene Aufteilung) rendern
         $this->content->text = $this->render_skills_chart();
 
         return $this->content;
     }
 
+    //Generiert Diagramm mit den Skills
     private function render_skills_chart() {
         global $OUTPUT;
 
+        //statische Daten
         $skills = [
             'Alle Skills' => 75,
             'Skill - Git' => [
-                'Fortschritt' => 50,
+                'Fortschritt' => 70,
                 'Sub-Skills' => [
                     'Initialisierung' => 100,
-                    'Branch' => 25
+                    'Branching' => 25
                 ]
             ],
             'Skill - Conflict Handling' => [
                 'Fortschritt' => 100,
-                'Sub-Skills' => []
+                'Sub-Skills' => [
+                    'Merge Conflict' => 100,
+                    'Rebasing' => 100
+                ]
+            ],
+            'Skill - yolo' => [
+                'Fortschritt' => 70,
+                'Sub-Skills' => [
+                    'Initialisierung' => 100,
+                    'Branching' => 25
+                ]
+            ],
+            'Skill - swag' => [
+                'Fortschritt' => 100,
+                'Sub-Skills' => [
+                    'Merge Conflict' => 100,
+                    'Rebasing' => 100,
+                    'Money Boy' => 80,
+                    'Money' => 100
+                ]
             ]
         ];
-
-        $html = '<div style="display: flex; align-items: flex-start; gap: 20px;">';
-        $html .= $this->render_vertical_bar('Alle Skills', $skills['Alle Skills']);
+        $html = '<div style="margin-bottom: 10px; font-size: 14px; font-weight: bold; text-align: center;">Skills</div>';
+        $html .= '<div style="display: flex; align-items: flex-start; gap: 20px;">';
+        $html .= $this->render_vertical_bar('', $skills['Alle Skills']);
+        // .= Kombinationsoperator
+        
         $html .= '<div style="flex: 1;">';
-
         foreach ($skills as $skill => $data) {
             if ($skill === 'Alle Skills') {
                 continue;
@@ -81,13 +109,18 @@ class block_compviz extends block_base {
         return $html;
     }
 
+    //Aufklappbare Skills/Sub-Skills
     private function render_collapsible_skill($label, $progress, $subskills) {
         // Fortschrittsbalken mit dem Marker (Pfeil) innerhalb der Progressbar
         $html = '<details>';
         $html .= '<summary style="margin: 0; padding: 0; list-style: none;">' . $this->render_horizontal_bar($label, $progress, true) . '</summary>';
+
         if (!empty($subskills)) {
             $html .= '<div style="margin-left: 20px;">';
+            //Subskills werden eingerückt!
+
             foreach ($subskills as $subskill => $subprogress) {
+                //Hauptskills werden horizontal angezeigt
                 $html .= $this->render_horizontal_bar($subskill, $subprogress, false);
             }
             $html .= '</div>';
@@ -97,13 +130,16 @@ class block_compviz extends block_base {
         return $html;
     }
     
+    //Horizontaler Fortschrittsbalken
     private function render_horizontal_bar($label, $progress, $is_main_skill = false) {
+        //Fortschrittswert horizontal
         $bar_width = $progress . '%';
         $background_color = $this->get_progress_color($progress);
     
         // Fortschrittsbalken-Inhalt: Label und Pfeil (bei Hauptskills)
         $content = '<div style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; position: relative;">
-                        <span style="font-size: 10px;">' . $label . '</span>'; // Text mittig
+                        <span style="font-size: 12px;">' . $label . '</span>'; // Text mittig in Box
+        //Dropdown-Pfeil nur bei den Hauptskills (später auch für die subskills)
         if ($is_main_skill) {
             $content .= '<span style="position: absolute; right: 10px; font-size: 12px; cursor: pointer;">▼</span>'; // Dropdown-Pfeil rechts
         }
@@ -117,15 +153,17 @@ class block_compviz extends block_base {
                 </div>';
     }
     
-
+    //vertikale Fortschrittsanzeige
     private function render_vertical_bar($label, $progress) {
+        //Fortschrittswert vertikal
         $bar_height = $progress . '%';
         $background_color = $this->get_progress_color($progress);
 
+        //Text steht über Leiste
         return '<div style="text-align: center;">
-            <div style="font-size: 12px; color: #333;">' . $label . '</div>
-            <div style="width: 30px; height: 150px; border: 1px solid #ccc; border-radius: 5px; background: #f4f4f4; position: relative;">
-                <div style="height: ' . $bar_height . '; width: 100%; background-color: ' . $background_color . '; position: absolute; bottom: 0; display: flex; align-items: flex-end; justify-content: center; color: #333; font-weight: normal; font-size: 12px; padding-bottom: 5px;">
+            <div style="font-size: 12px; color: #333; margin-bottom: 10px">' . $label . '</div>
+            <div style="width: 40px; height: 200px; border: 1px solid #ccc; border-radius: 5px; background: #f4f4f4; position: relative;">
+                <div style="height: ' . $bar_height . '; width: 100%; background-color: ' . $background_color . '; position: absolute; bottom: 0; display: flex; align-items: flex-end; justify-content: center; color: #333; font-weight: normal; font-size: 12px; padding-bottom: 8px;">
                     ' . $progress . '%
                 </div>
             </div>
