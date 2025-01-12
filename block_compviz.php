@@ -60,13 +60,25 @@ class block_compviz extends block_base {
         //statische Daten
         $skills = [
             'Alle Skills' => 75,
-            'Skill - Git' => [
-                'Fortschritt' => 70,
-                'Sub-Skills' => [
-                    'Initialisierung' => 100,
-                    'Branching' => 25
+        'Skill - Git' => [
+            'Fortschritt' => 50,
+            'Sub-Skills' => [
+                'Initialisierung' => 100,
+                'Branch' => [
+                    'Fortschritt' => 25,
+                    'Sub-Skills' => [
+                        'Erstellen' => 80,
+                        'Mergen' => [
+                            'Fortschritt' => 60,
+                            'Sub-Skills' => [
+                                'Fast-Forward' => 90,
+                                '3-Way Merge' => 50
+                            ]
+                        ]
+                    ]
                 ]
-            ],
+            ]
+        ],
             'Skill - Conflict Handling' => [
                 'Fortschritt' => 100,
                 'Sub-Skills' => [
@@ -115,14 +127,17 @@ class block_compviz extends block_base {
         // Fortschrittsbalken mit dem Marker (Pfeil) innerhalb der Progressbar
         $html = '<details>';
         $html .= '<summary style="margin: 0; padding: 0; list-style: none;">' . $this->render_horizontal_bar($label, $progress, true) . '</summary>';
-
         if (!empty($subskills)) {
             $html .= '<div style="margin-left: 20px;">';
-            //Subskills werden eingerückt!
-
             foreach ($subskills as $subskill => $subprogress) {
-                //Hauptskills werden horizontal angezeigt
-                $html .= $this->render_horizontal_bar($subskill, $subprogress, false);
+                if(is_array($subprogress) && !empty($subprogress))
+                {
+                    $html .= $this->render_collapsible_skill($subskill, $subprogress['Fortschritt'], $subprogress['Sub-Skills']);
+                }
+                else
+                {
+                    $html .= $this->render_horizontal_bar($subskill, $subprogress, false);
+                }
             }
             $html .= '</div>';
         }
