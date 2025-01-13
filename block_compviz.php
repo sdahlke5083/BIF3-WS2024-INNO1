@@ -48,8 +48,6 @@ class block_compviz extends block_base {
         // Diagramm mit flexibler Platzierung (da eigene Aufteilung) rendern
         $this->content->text = $this->render_skills_chart();
 
-        global $PAGE;
-        $PAGE->requires->js_call_amd('block_compviz/testfile', 'init'); 
         return $this->content;
     }
 
