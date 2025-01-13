@@ -25,7 +25,6 @@
 
 //defined('MOODLE_INTERNAL') || die();
 
-$string['compviz_name'] = 'Competence Visualization';
 $string['pluginname'] = 'Competence Visualization';
 $string['compviz:show_graph'] = 'Show Grading Graph';
 $string['compviz:addinstance'] = 'Add new Competence Visualization block';

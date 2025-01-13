@@ -49,7 +49,7 @@ class block_compviz extends block_base {
         $this->content->text = $this->render_skills_chart();
 
         global $PAGE;
-        $PAGE->requires->js_call_amd('block_compviz/mymodule', 'init'); 
+        $PAGE->requires->js_call_amd('block_compviz/testfile', 'init'); 
         return $this->content;
     }
 
