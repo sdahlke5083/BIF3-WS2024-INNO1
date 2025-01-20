@@ -57,7 +57,8 @@ class block_compviz extends block_base {
 
         //statische Daten
         $skills = [
-	    'Alle Skills' => 75,
+	    /*
+			'Alle Skills' => 75,
 	    'Skill - Git' => [
 		'Fortschritt' => 50,
 		'Sub-Skills' => [
@@ -88,172 +89,88 @@ class block_compviz extends block_base {
 		        ]
 		    ]
 		]
-	    ],
-	    'Skill - Conflict Handling' => [
-		'Fortschritt' => 100,
-		'Sub-Skills' => [
-		    'Merge Conflict' => 100,
-		    'Rebasing' => 100
+	    ],*/
+		'Skill - Conflict Handling' => [
+			'Fortschritt' => 100,
+			'Sub-Skills' => [
+				'Merge Conflict' => 100,
+				'Rebasing' => 100
+			]
+		],
+		'Skill - JavaScript' => [
+			'Fortschritt' => 80,
+			'Sub-Skills' => [
+				'ES6' => 85,
+				'Async Programming' => 75,
+			]
+		],
+		'Skill - Python' => [
+			'Fortschritt' => 60,
+			'Sub-Skills' => [
+				'Data Structures' => 65,
+				'Web Development' => 55,
+			]
+		],
+		'Skill - SQL' => [
+			'Fortschritt' => 40,
+			'Sub-Skills' => [
+				'Basic Queries' => 45,
+				'Joins' => 35,
+			]
+		],
+		'Skill - PHP' => [
+			'Fortschritt' => 50,
+			'Sub-Skills' => [
+				'Syntax' => 55,
+				'Functions' => 45,
+			]
+		],
+		'Skill - CSS' => [
+			'Fortschritt' => 90,
+			'Sub-Skills' => [
+				'Flexbox' => 95,
+				'Grid' => 85,
+			]
+		],
+		'Skill - Java' => [
+			'Fortschritt' => 70,
+			'Sub-Skills' => [
+				'Basic Syntax' => 75,
+				'OOP' => 65,
+			]
+		],
+		'Skill - C++' => [
+			'Fortschritt' => 30,
+			'Sub-Skills' => [
+				'Syntax' => 35,
+				'Memory Management' => 25,
+			]
+		],
+		'Skill - Data Structures' => [
+			'Fortschritt' => 20,
+			'Sub-Skills' => [
+				'Arrays' => 15,
+				'Linked Lists' => 25,
+			]
+		],
+		'Skill - Algorithms' => [
+			'Fortschritt' => 75,
+			'Sub-Skills' => [
+				'Sorting' => 80,
+				'Searching' => 70,
+			]
 		]
-	    ],
-	    'Skill - yolo' => [
-		'Fortschritt' => 70,
-		'Sub-Skills' => [
-		    'Initialisierung' => 100,
-		    'Branching' => 25
-		]
-	    ],
-	    'Skill - swag' => [
-		'Fortschritt' => 100,
-		'Sub-Skills' => [
-		    'Merge Conflict' => 100,
-		    'Rebasing' => 100,
-		    'Money Boy' => 80,
-		    'Money' => 100
-		]
-	    ],
-	    'Skill - JavaScript' => [
-		'Fortschritt' => 65,
-		'Sub-Skills' => [
-		    'ES6' => 80,
-		    'Async Programming' => 60,
-		    'React' => 70,
-		    'Vue.js' => 50
-		]
-	    ],
-	    'Skill - Python' => [
-		'Fortschritt' => 85,
-		'Sub-Skills' => [
-		    'Data Structures' => 90,
-		    'Web Development' => 75,
-		    'Machine Learning' => 85,
-		    'Data Science' => 80,
-		    'Flask' => 70
-		]
-	    ],
-	    'Skill - SQL' => [
-		'Fortschritt' => 80,
-		'Sub-Skills' => [
-		    'Basic Queries' => 100,
-		    'Joins' => 85,
-		    'Subqueries' => 75,
-		    'Indexes' => 65
-		]
-	    ],
-	    'Skill - PHP' => [
-		'Fortschritt' => 60,
-		'Sub-Skills' => [
-		    'Syntax' => 80,
-		    'Functions' => 70,
-		    'OOP' => 50,
-		    'Laravel' => 55
-		]
-	    ],
-	    'Skill - CSS' => [
-		'Fortschritt' => 90,
-		'Sub-Skills' => [
-		    'Flexbox' => 95,
-		    'Grid' => 85,
-		    'Animations' => 90,
-		    'Responsive Design' => 80
-		]
-	    ],
-	    'Skill - Java' => [
-		'Fortschritt' => 60,
-		'Sub-Skills' => [
-		    'Basic Syntax' => 70,
-		    'OOP' => 55,
-		    'Spring' => 65,
-		    'Concurrency' => 60
-		]
-	    ],
-	    'Skill - C++' => [
-		'Fortschritt' => 50,
-		'Sub-Skills' => [
-		    'Syntax' => 60,
-		    'Memory Management' => 45,
-		    'STL' => 50,
-		    'Concurrency' => 40
-		]
-	    ],
-	    'Skill - Data Structures' => [
-		'Fortschritt' => 95,
-		'Sub-Skills' => [
-		    'Arrays' => 100,
-		    'Linked Lists' => 90,
-		    'Trees' => 85,
-		    'Graphs' => 80,
-		    'Hash Tables' => 95
-		]
-	    ],
-	    'Skill - Algorithms' => [
-		'Fortschritt' => 80,
-		'Sub-Skills' => [
-		    'Sorting' => 90,
-		    'Searching' => 85,
-		    'Dynamic Programming' => 75,
-		    'Greedy Algorithms' => 70
-		]
-	    ],
-	    'Skill - Machine Learning' => [
-		'Fortschritt' => 90,
-		'Sub-Skills' => [
-		    'Supervised Learning' => 95,
-		    'Unsupervised Learning' => 85,
-		    'Neural Networks' => 80,
-		    'Deep Learning' => 85,
-		    'Reinforcement Learning' => 75
-		]
-	    ],
-	    'Skill - Cloud Computing' => [
-		'Fortschritt' => 70,
-		'Sub-Skills' => [
-		    'AWS' => 80,
-		    'Azure' => 65,
-		    'Google Cloud' => 60
-		]
-	    ],
-	    'Skill - DevOps' => [
-		'Fortschritt' => 75,
-		'Sub-Skills' => [
-		    'CI/CD' => 80,
-		    'Docker' => 70,
-		    'Kubernetes' => 60,
-		    'Terraform' => 65
-		]
-	    ],
-	    'Skill - Networking' => [
-		'Fortschritt' => 60,
-		'Sub-Skills' => [
-		    'TCP/IP' => 70,
-		    'DNS' => 65,
-		    'HTTP/HTTPS' => 75
-		]
-	    ],
-	    'Skill - UI/UX Design' => [
-		'Fortschritt' => 80,
-		'Sub-Skills' => [
-		    'Wireframing' => 85,
-		    'Prototyping' => 75,
-		    'User Research' => 80
-		]
-	    ],
-	    'Skill - Cybersecurity' => [
-		'Fortschritt' => 70,
-		'Sub-Skills' => [
-		    'Encryption' => 75,
-		    'Firewall' => 65,
-		    'Penetration Testing' => 60,
-		    'Network Security' => 80
-		]
-	    ]
 	];
+
+		$totalProgress = array_sum(array_column($skills, 'Fortschritt')) / count($skills);
 
         $html = '<div style="margin-bottom: 10px; font-size: 14px; font-weight: bold; text-align: center;">Skills</div>';
         $html .= '<div style="display: flex; align-items: flex-start; gap: 20px;">';
-        $html .= $this->render_vertical_bar('', $skills['Alle Skills']);
+		//$html .= '<div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">';
+        //$html .= $this->render_vertical_bar('', $skills['Alle Skills']);
+		$html .= $this->render_vertical_bar('Total', $totalProgress);
         // .= Kombinationsoperator
-        
+		//$html .= '<div style="display: flex; gap: 20px;">';
         $html .= '<div style="flex: 1;">';
         foreach ($skills as $skill => $data) {
             if ($skill === 'Alle Skills') {
@@ -333,13 +250,17 @@ class block_compviz extends block_base {
     }
 
     private function get_progress_color($progress) {
-        if ($progress < 50) {
-            return '#dc3545'; // Rot
-        } elseif ($progress < 75) {
-            return '#ffc107'; // Gelb
-        } else {
-            return '#28a745'; // Grün
-        }
+        if ($progress < 20) {
+            return '#EEFFBA'; // Rot
+        } elseif ($progress < 40) {
+            return '#D6FA8C'; // Gelb
+        } elseif($progress < 60) {
+            return '#BEED53'; // Grün
+        }elseif($progress < 80){
+			return '#A5D722'; 
+		}else{
+			return '#78AD00'; 
+		}
     }
 
     public function has_config() {
