@@ -249,17 +249,33 @@ class block_compviz extends block_base {
         </div>';
     }
 
+    /* Grünes Konzept
     private function get_progress_color($progress) {
         if ($progress < 20) {
-            return '#EEFFBA'; // Rot
+            return '#EEFFBA'; 
         } elseif ($progress < 40) {
-            return '#D6FA8C'; // Gelb
+            return '#D6FA8C'; 
         } elseif($progress < 60) {
-            return '#BEED53'; // Grün
+            return '#BEED53'; 
         }elseif($progress < 80){
 			return '#A5D722'; 
 		}else{
 			return '#78AD00'; 
+		}
+    }
+    */
+
+    private function get_progress_color($progress) {
+        if ($progress < 20) {
+            return '#D8F3DC'; 
+        } elseif ($progress < 40) {
+            return '#b7e4c7'; 
+        } elseif($progress < 60) {
+            return '#74c69d'; 
+        }elseif($progress < 80){
+			return '#52b788'; 
+		}else{
+			return '#40916C'; 
 		}
     }
 
