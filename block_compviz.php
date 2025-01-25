@@ -163,7 +163,7 @@ class block_compviz extends block_base {
 	];
 
 		$totalProgress = array_sum(array_column($skills, 'Fortschritt')) / count($skills);
-
+/*
         $html = '<div style="margin-bottom: 10px; font-size: 14px; font-weight: bold; text-align: center;">Skills</div>';
         $html .= '<div style="display: flex; align-items: flex-start; gap: 20px;">';
 		//$html .= '<div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">';
@@ -172,14 +172,28 @@ class block_compviz extends block_base {
         // .= Kombinationsoperator
 		//$html .= '<div style="display: flex; gap: 20px;">';
         $html .= '<div style="flex: 1;">';
+*/
+        $html = '<div style="margin-bottom: 15px; font-size: 16px; font-weight: bold; text-align: center;">Skills Overview</div>';
+        $html .= '<div style="display: flex; flex-direction: column; gap: 5px;">';
+
+        // Horizontale Leiste für Gesamtfortschritt
+        $html .= '<div style="margin-bottom: 20px;">';
+        $html .= $this->render_horizontal_bar('Total', $totalProgress, false);
+        $html .= '</div>';
+
+        foreach ($skills as $skill => $data) {
+            $html .= $this->render_collapsible_skill($skill, $data['Fortschritt'], $data['Sub-Skills']);
+        }
+        
+        /*
         foreach ($skills as $skill => $data) {
             if ($skill === 'Alle Skills') {
                 continue;
             }
             $html .= $this->render_collapsible_skill($skill, $data['Fortschritt'], $data['Sub-Skills']);
         }
-
-        $html .= '</div>'; // Skills-Container
+        */
+        //$html .= '</div>'; // Skills-Container
         $html .= '</div>'; // Hauptcontainer
 
         return $html;
@@ -231,7 +245,7 @@ class block_compviz extends block_base {
                     </div>
                 </div>';
     }
-    
+    /*
     //vertikale Fortschrittsanzeige
     private function render_vertical_bar($label, $progress) {
         //Fortschrittswert vertikal
@@ -248,6 +262,7 @@ class block_compviz extends block_base {
             </div>
         </div>';
     }
+    */
 
     /* Grünes Konzept
     private function get_progress_color($progress) {
