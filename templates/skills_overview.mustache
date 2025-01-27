@@ -1,0 +1,125 @@
+{{!
+	This file is part of Moodle - http://moodle.org/
+
+	Moodle is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	Moodle is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+	More information: https://moodledev.io/docs/4.5/guides/templates/
+	
+}}
+{{!
+    @template block_compviz/skills_overview
+
+    This template is used to render an overview of skills and their progress within the Moodle platform. It displays the total progress of all skills combined, as well as individual progress for each skill and its sub-skills.
+    The template includes a header, a total progress bar, and a list of skills. Each skill has its own progress bar and can contain multiple sub-skills, each with their own progress bars. The progress bars visually represent the completion percentage, and a passing value indicator shows the required threshold for passing.
+
+    Classes required for JS:
+    - .skills-overview
+    - .skill
+    - .skill-header
+
+    Example context (json): 
+    { 
+        "header": "Skills Overview",
+        "totalProgress": 50,
+        "passingValue": 70,
+        "skills": [
+            {
+                "id": 1,
+                "name": "Skill 1",
+                "progress": 50,
+                "passingValue": 70,
+                "subSkills": [
+                    {
+                        "progress": 50,
+                        "passingValue": 70
+                    },
+                    {
+                        "progress": 50,
+                        "passingValue": 70
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "name": "Skill 2",
+                "progress": 50,
+                "passingValue": 70,
+                "subSkills": [
+                    {
+                        "progress": 50,
+                        "passingValue": 70
+                    },
+                    {
+                        "progress": 50,
+                        "passingValue": 70
+                    }
+                ]
+            }
+        ]
+    }
+}}
+
+<div class="container" data-block-id="{{id}}">
+    <div class="row">
+        <div class="col-12">
+            <h4 class="h5">{{header}}</h4>
+        </div>
+    </div>
+    <div class="row my-1 mx-0">
+        <div class="col-2 p-0" style="min-height: 200px">
+            <div class="h-100">
+                <div class="progress-horizontal">
+                    <div class="progress-bar-horizontal" role="progressbar" style="height: {{totalProgress}}%;" aria-valuenow="{{totalProgress}}" aria-valuemin="0" aria-valuemax="100">{{totalProgress}}%</div>
+                    <!-- <div class="passing-value-horizontal" style="bottom: {{passingValue}}%;"></div> -->
+                </div>
+            </div>
+        </div>
+        <div class="col-10">
+            <div class="container p-0">
+                {{#skills}}
+                <div class="skill">
+                    <div class="row my-1">
+                        <div class="col-12 skill-header">
+                            <div class="progress position-relative">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{progress}}%;">
+                                    <span class="sr-only">{{progress}}% Complete</span>
+                                </div>
+                                <span class="progress-text">{{name}}</span>
+                                <span class="progress-value">{{progress}}%</span>
+                                <div class="passing-value position-absolute" style="left: {{passingValue}}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="skill-content hidden">
+                        {{#subSkills}}
+                        <div class="row my-1">
+                            <div class="col-12">
+                                <div class="progress" style="height: 2rem;">
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{progress}}%;">
+                                        <span class="sr-only">{{progress}}% Complete</span>
+                                    </div>
+                                    <span class="progress-text">{{name}}</span>
+                                    <span class="progress-value">{{progress}}%</span>
+                                    <div class="passing-value position-absolute" style="left: {{passingValue}}%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        {{/subSkills}}
+                    </div>
+                </div>
+                {{/skills}}
+            </div>
+        </div>
+    </div>
+</div>
