@@ -22,6 +22,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// import display_data.php
+require_once($CFG->dirroot . '/blocks/compviz/db/display_data.php');
 
 class block_compviz extends block_base {
 
@@ -54,126 +56,25 @@ class block_compviz extends block_base {
     //Generiert Diagramm mit den Skills
     private function render_skills_chart() {
         global $OUTPUT;
+    
+        $moodle_version = block_compviz_get_moodle_version_from_db();
+        $gradings = (array) block_compviz_get_display_data();
 
-        //statische Daten
-        $skills = [
-	    /*
-			'Alle Skills' => 75,
-	    'Skill - Git' => [
-		'Fortschritt' => 50,
-		'Sub-Skills' => [
-		    'Initialisierung' => 100,
-		    'Branch' => [
-		        'Fortschritt' => 25,
-		        'Sub-Skills' => [
-		            'Erstellen' => 80,
-		            'Mergen' => [
-		                'Fortschritt' => 60,
-		                'Sub-Skills' => [
-		                    'Fast-Forward' => 90,
-		                    '3-Way Merge' => [
-		                        'Fortschritt' => 50,
-		                        'Sub-Skills' => [
-		                            'Merge Conflict' => 75,
-		                            'Rebasing' => [
-		                                'Fortschritt' => 60,
-		                                'Sub-Skills' => [
-		                                    'Basic Rebasing' => 80,
-		                                    'Interactive Rebasing' => 70
-		                                ]
-		                            ]
-		                        ]
-		                    ]
-		                ]
-		            ]
-		        ]
-		    ]
-		]
-	    ],*/
-		'Skill - Conflict Handling' => [
-			'Fortschritt' => 100,
-			'Sub-Skills' => [
-				'Merge Conflict' => 100,
-				'Rebasing' => 100
-			]
-		],
-		'Skill - JavaScript' => [
-			'Fortschritt' => 80,
-			'Sub-Skills' => [
-				'ES6' => 85,
-				'Async Programming' => 75,
-			]
-		],
-		'Skill - Python' => [
-			'Fortschritt' => 60,
-			'Sub-Skills' => [
-				'Data Structures' => 65,
-				'Web Development' => 55,
-			]
-		],
-		'Skill - SQL' => [
-			'Fortschritt' => 40,
-			'Sub-Skills' => [
-				'Basic Queries' => 45,
-				'Joins' => 35,
-			]
-		],
-		'Skill - PHP' => [
-			'Fortschritt' => 50,
-			'Sub-Skills' => [
-				'Syntax' => 55,
-				'Functions' => 45,
-			]
-		],
-		'Skill - CSS' => [
-			'Fortschritt' => 90,
-			'Sub-Skills' => [
-				'Flexbox' => 95,
-				'Grid' => 85,
-			]
-		],
-		'Skill - Java' => [
-			'Fortschritt' => 70,
-			'Sub-Skills' => [
-				'Basic Syntax' => 75,
-				'OOP' => 65,
-			]
-		],
-		'Skill - C++' => [
-			'Fortschritt' => 30,
-			'Sub-Skills' => [
-				'Syntax' => 35,
-				'Memory Management' => 25,
-			]
-		],
-		'Skill - Data Structures' => [
-			'Fortschritt' => 20,
-			'Sub-Skills' => [
-				'Arrays' => 15,
-				'Linked Lists' => 25,
-			]
-		],
-		'Skill - Algorithms' => [
-			'Fortschritt' => 75,
-			'Sub-Skills' => [
-				'Sorting' => 80,
-				'Searching' => 70,
-			]
-		]
-	];
+        $html = "DB-Data: <br/>";
+        // Display Moodle version
+        $html .= "Moodle version: ";
+        $html .= $moodle_version;
+        $html .= "<br/>";
+        // Display block_compviz data	
+        if($gradings == [] ){ // if is empty array
+            $html .= "No data found";
+            return $html;
+        }
 
-		$totalProgress = array_sum(array_column($skills, 'Fortschritt')) / count($skills);
-/*
-        $html = '<div style="margin-bottom: 10px; font-size: 14px; font-weight: bold; text-align: center;">Skills</div>';
-        $html .= '<div style="display: flex; align-items: flex-start; gap: 20px;">';
-		//$html .= '<div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">';
-        //$html .= $this->render_vertical_bar('', $skills['Alle Skills']);
-		$html .= $this->render_vertical_bar('Total', $totalProgress);
-        // .= Kombinationsoperator
-		//$html .= '<div style="display: flex; gap: 20px;">';
-        $html .= '<div style="flex: 1;">';
-*/
-        $html = '<div style="margin-bottom: 15px; font-size: 16px; font-weight: bold; text-align: center;">Skills Overview</div>';
+
+		$totalProgress = array_sum(array_column($gradings, 'rawgrade')) / count($gradings);
+
+        $html .= '<div style="margin-bottom: 15px; font-size: 16px; font-weight: bold; text-align: center;">Skills Overview</div>';
         $html .= '<div style="display: flex; flex-direction: column; gap: 5px;">';
 
         // Horizontale Leiste für Gesamtfortschritt
@@ -181,19 +82,13 @@ class block_compviz extends block_base {
         $html .= $this->render_horizontal_bar('Total', $totalProgress, false);
         $html .= '</div>';
 
-        foreach ($skills as $skill => $data) {
-            $html .= $this->render_collapsible_skill($skill, $data['Fortschritt'], $data['Sub-Skills']);
+        var_dump(gettype($gradings));
+
+        foreach ($gradings as $grade) {
+            $grade = (array) $grade;
+            $html .= $this->render_collapsible_skill($grade["itemname"], $grade['rawgrade'], []);
         }
         
-        /*
-        foreach ($skills as $skill => $data) {
-            if ($skill === 'Alle Skills') {
-                continue;
-            }
-            $html .= $this->render_collapsible_skill($skill, $data['Fortschritt'], $data['Sub-Skills']);
-        }
-        */
-        //$html .= '</div>'; // Skills-Container
         $html .= '</div>'; // Hauptcontainer
 
         return $html;
