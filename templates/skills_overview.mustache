@@ -20,89 +20,59 @@
 {{!
     @template block_compviz/skills_overview
 
-    This template is used to render an overview of skills and their progress within the Moodle platform. It displays the total progress of all skills combined, as well as individual progress for each skill and its sub-skills.
-    The template includes a header, a total progress bar, and a list of skills. Each skill has its own progress bar and can contain multiple sub-skills, each with their own progress bars. The progress bars visually represent the completion percentage, and a passing value indicator shows the required threshold for passing.
-
-    Classes required for JS:
-    - .skills-overview
-    - .skill
-    - .skill-header
-
-    Example context (json): 
-    { 
-        "header": "Skills Overview",
-        "totalProgress": 50,
-        "passingValue": 70,
-        "skills": [
-            {
-                "id": 1,
-                "name": "Skill 1",
-                "progress": 50,
-                "passingValue": 70,
-                "subSkills": [
-                    {
-                        "progress": 50,
-                        "passingValue": 70
-                    },
-                    {
-                        "progress": 50,
-                        "passingValue": 70
-                    }
-                ]
-            },
-            {
-                "id": 2,
-                "name": "Skill 2",
-                "progress": 50,
-                "passingValue": 70,
-                "subSkills": [
-                    {
-                        "progress": 50,
-                        "passingValue": 70
-                    },
-                    {
-                        "progress": 50,
-                        "passingValue": 70
-                    }
-                ]
-            }
-        ]
-    }
+    Displays total skill progress and individual skill/sub-skill progress bars.
+    Styles and widths are responsive, no fixed widths used for skill/sub-skill bars.
 }}
+
 <div class="skills-overview-header text-center mb-3">{{header}}</div>
+
 <div class="skills-overview-container d-flex flex-column gap-2">
+
+    <!-- Total progress -->
     <div class="total-progress-container d-flex justify-content-center mb-4">
-        <div class="total-progress text-center">
+        <div class="total-progress text-center w-100" style="max-width: 280px;">
             <div class="total-progress-label mb-2 text-muted">Total</div>
-            <div class="total-progress-bar position-relative bg-light border rounded" style="width: 200px; height: 40px;">
-                <div class="total-progress-fill position-absolute top-0 start-0 h-100 d-flex align-items-center justify-content-center text-dark" style="width: {{totalProgress}}%; background-color: {{get_progress_color totalProgress}};">
+            <div class="total-progress-bar position-relative bg-light border rounded" style="height: 40px;">
+                <div class="total-progress-fill position-absolute top-0 start-0 h-100 d-flex align-items-center justify-content-center text-dark" style="width: {{totalProgress}}%; background-color: {{totalColor}};">
                     {{totalProgress}}%
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Skill list -->
     {{#skills}}
     <details>
-        <summary class="skill-summary list-unstyled p-0">
+    <summary class="skill-summary list-unstyled p-0 d-flex justify-content-center">
+        <div class="skill-wrapper w-100" style="max-width: 90%;">
             <div class="skill-progress-bar d-flex align-items-center bg-light border rounded position-relative mb-2" style="height: 35px;">
-                <div class="skill-progress-fill position-absolute top-0 start-0 h-100" style="width: {{progress}}%; background-color: {{get_progress_color progress}};"></div>
+                <div class="skill-progress-fill position-absolute top-0 start-0 h-100" style="width: {{progress}}%; background-color: {{color}};"></div>
                 <div class="skill-progress-text position-relative w-100 d-flex align-items-center justify-content-center text-dark">
                     <div class="skill-name">{{name}}</div>
                     <span class="skill-toggle position-absolute end-0 me-2">▼</span>
                 </div>
             </div>
-        </summary>
-        {{#subSkills}}
-        <div class="sub-skill-container ms-3">
-            <div class="sub-skill-progress-bar d-flex align-items-center bg-light border rounded position-relative mb-2" style="height: 35px;">
-                <div class="sub-skill-progress-fill position-absolute top-0 start-0 h-100" style="width: {{progress}}%; background-color: {{get_progress_color progress}};"></div>
-                <div class="sub-skill-progress-text position-relative w-100 d-flex align-items-center justify-content-center text-dark">
-                    <div class="sub-skill-name">{{name}}</div>
+        </div>
+    </summary>
+
+    <!-- Subskills: außerhalb, aber rechtsbündig an Skillbar ausgerichtet -->
+    {{#subSkills}}
+    <div class="d-flex justify-content-center w-100">
+        <div class="sub-skill-wrapper w-100" style="max-width: 90%;">
+            <div class="sub-skill-inner ms-auto" style="width: 85%;">
+                <div class="sub-skill-progress-bar d-flex align-items-center bg-light border rounded position-relative mb-2" style="height: 35px;">
+                    <div class="sub-skill-progress-fill position-absolute top-0 start-0 h-100" style="width: {{progress}}%; background-color: {{color}};"></div>
+                    <div class="sub-skill-progress-text position-relative w-100 d-flex align-items-center justify-content-center text-dark">
+                        <div class="sub-skill-name">{{name}}</div>
+                    </div>
                 </div>
             </div>
         </div>
-        {{/subSkills}}
-    </details>
+    </div>
+    {{/subSkills}}
+
+</details>
+
     {{/skills}}
 </div>
 

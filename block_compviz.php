@@ -57,11 +57,11 @@ class block_compviz extends block_base {
     // Generiert Diagramm mit Moustache Template
     private function block_compviz_render_skills_overview() {
         global $OUTPUT;
-
+    
         $skills = $this->block_compviz_get_skills_data();
         $totalprogress = $this->block_compviz_get_total_progress($skills);
-        $passingvalue = 75; // Example value
-
+        $passingvalue = 75;
+    
         $skillsData = [];
         foreach ($skills as $name => $skill) {
             $subSkillsData = [];
@@ -69,7 +69,8 @@ class block_compviz extends block_base {
                 $subSkillsData[] = [
                     'name' => $key,
                     'progress' => $subSkill,
-                    'passingValue' => $passingvalue
+                    'passingValue' => $passingvalue,
+                    'color' => $this->get_progress_color($subSkill)
                 ];
             }
             $skillsData[] = [
@@ -77,90 +78,92 @@ class block_compviz extends block_base {
                 'name' => $name,
                 'progress' => $skill['Fortschritt'],
                 'passingValue' => $passingvalue,
+                'color' => $this->get_progress_color($skill['Fortschritt']),
                 'subSkills' => $subSkillsData
             ];
         }
-
+    
         $data = [
             'header' => get_string('skills_overview', 'block_compviz'),
             'totalProgress' => $totalprogress,
+            'totalColor' => $this->get_progress_color($totalprogress),
             'passingValue' => $passingvalue,
             'skills' => $skillsData
         ];
-
+    
         return $OUTPUT->render_from_template('block_compviz/skills_overview', $data);
-        
     }
+    
 
     // Holt Daten der Skills
     private function block_compviz_get_skills_data() {
         //global $DB, $USER;
 
         $skills = [
-            'Skill - Conflict Handling' => [
+            'Conflict Handling' => [
                 'Fortschritt' => 100,
                 'Sub-Skills' => [
                     'Merge Conflict' => 100,
                     'Rebasing' => 100
                 ]
             ],
-            'Skill - JavaScript' => [
+            'JavaScript' => [
                 'Fortschritt' => 80,
                 'Sub-Skills' => [
                     'ES6' => 85,
                     'Async Programming' => 75,
                 ]
             ],
-            'Skill - Python' => [
+            'Python' => [
                 'Fortschritt' => 60,
                 'Sub-Skills' => [
                     'Data Structures' => 65,
                     'Web Development' => 55,
                 ]
             ],
-            'Skill - SQL' => [
+            'SQL' => [
                 'Fortschritt' => 40,
                 'Sub-Skills' => [
                     'Basic Queries' => 45,
                     'Joins' => 35,
                 ]
             ],
-            'Skill - PHP' => [
+            'PHP' => [
                 'Fortschritt' => 50,
                 'Sub-Skills' => [
                     'Syntax' => 55,
                     'Functions' => 45,
                 ]
             ],
-            'Skill - CSS' => [
+            'CSS' => [
                 'Fortschritt' => 90,
                 'Sub-Skills' => [
                     'Flexbox' => 95,
                     'Grid' => 85,
                 ]
             ],
-            'Skill - Java' => [
+            'Java' => [
                 'Fortschritt' => 70,
                 'Sub-Skills' => [
                     'Basic Syntax' => 75,
                     'OOP' => 65,
                 ]
             ],
-            'Skill - C++' => [
+            'C++' => [
                 'Fortschritt' => 30,
                 'Sub-Skills' => [
                     'Syntax' => 35,
                     'Memory Management' => 25,
                 ]
             ],
-            'Skill - Data Structures' => [
+            'Data Structures' => [
                 'Fortschritt' => 20,
                 'Sub-Skills' => [
                     'Arrays' => 15,
                     'Linked Lists' => 25,
                 ]
             ],
-            'Skill - Algorithms' => [
+            'Algorithms' => [
                 'Fortschritt' => 75,
                 'Sub-Skills' => [
                     'Sorting' => 80,
