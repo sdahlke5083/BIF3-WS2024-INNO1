@@ -15,7 +15,6 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
     More information: https://moodledev.io/docs/4.5/guides/templates/
-    
 }}
 {{!
     @template block_compviz/skills_overview
@@ -25,15 +24,20 @@
 }}
 
 <div class="skills-overview-header text-center mb-3">{{header}}</div>
-
 <div class="skills-overview-container d-flex flex-column gap-2">
+
+    <h2 class="text-center mb-3">{{title}}</h2>
 
     <!-- Total progress -->
     <div class="total-progress-container d-flex justify-content-center mb-4">
         <div class="total-progress text-center w-100" style="max-width: 280px;">
             <div class="total-progress-label mb-2 text-muted">Total</div>
             <div class="total-progress-bar position-relative bg-light border rounded" style="height: 40px;">
-                <div class="total-progress-fill position-absolute top-0 start-0 h-100 d-flex align-items-center justify-content-center text-dark" style="width: {{totalProgress}}%; background-color: {{totalColor}};">
+                <!-- Fortschritt -->
+                <div class="total-progress-fill position-absolute top-0 start-0 h-100" style="width: {{totalProgress}}%; background-color: {{totalColor}};"></div>
+
+                <!-- Prozentanzeige zentriert -->
+                <div class="total-progress-text position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center text-dark">
                     {{totalProgress}}%
                 </div>
             </div>
@@ -43,36 +47,35 @@
     <!-- Skill list -->
     {{#skills}}
     <details>
-    <summary class="skill-summary list-unstyled p-0 d-flex justify-content-center">
-        <div class="skill-wrapper w-100" style="max-width: 90%;">
-            <div class="skill-progress-bar d-flex align-items-center bg-light border rounded position-relative mb-2" style="height: 35px;">
-                <div class="skill-progress-fill position-absolute top-0 start-0 h-100" style="width: {{progress}}%; background-color: {{color}};"></div>
-                <div class="skill-progress-text position-relative w-100 d-flex align-items-center justify-content-center text-dark">
-                    <div class="skill-name">{{name}}</div>
-                    <span class="skill-toggle position-absolute end-0 me-2">▼</span>
+        <summary class="skill-summary list-unstyled p-0 d-flex justify-content-center">
+            <div class="skill-wrapper w-100" style="max-width: 90%;">
+                <div class="skill-progress-bar d-flex align-items-center bg-light border rounded position-relative mb-2" style="height: 35px;">
+                    <div class="skill-progress-fill position-absolute top-0 start-0 h-100" style="width: {{progress}}%; background-color: {{color}};"></div>
+                    <div class="skill-progress-text position-relative w-100 d-flex align-items-center justify-content-center text-dark">
+                        <div class="skill-name">{{name}}</div>
+                        <span class="skill-toggle position-absolute end-0 me-2">▼</span>
+                    </div>
                 </div>
             </div>
-        </div>
-    </summary>
+        </summary>
 
-    <!-- Subskills: außerhalb, aber rechtsbündig an Skillbar ausgerichtet -->
-    {{#subSkills}}
-    <div class="d-flex justify-content-center w-100">
-        <div class="sub-skill-wrapper w-100" style="max-width: 90%;">
-            <div class="sub-skill-inner ms-auto" style="width: 85%;">
-                <div class="sub-skill-progress-bar d-flex align-items-center bg-light border rounded position-relative mb-2" style="height: 35px;">
-                    <div class="sub-skill-progress-fill position-absolute top-0 start-0 h-100" style="width: {{progress}}%; background-color: {{color}};"></div>
-                    <div class="sub-skill-progress-text position-relative w-100 d-flex align-items-center justify-content-center text-dark">
-                        <div class="sub-skill-name">{{name}}</div>
+        <!-- Subskills: außerhalb, aber rechtsbündig an Skillbar ausgerichtet -->
+        {{#subSkills}}
+        <div class="d-flex justify-content-center w-100">
+            <div class="sub-skill-wrapper w-100" style="max-width: 90%;">
+                <div class="sub-skill-inner ms-auto" style="width: 85%;">
+                    <div class="sub-skill-progress-bar d-flex align-items-center bg-light border rounded position-relative mb-2" style="height: 35px;">
+                        <div class="sub-skill-progress-fill position-absolute top-0 start-0 h-100" style="width: {{progress}}%; background-color: {{color}};"></div>
+                        <div class="sub-skill-progress-text position-relative w-100 d-flex align-items-center justify-content-center text-dark">
+                            <div class="sub-skill-name">{{name}}</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    {{/subSkills}}
+        {{/subSkills}}
 
-</details>
-
+    </details>
     {{/skills}}
 </div>
 
@@ -84,10 +87,14 @@
 .total-progress-label {
     font-size: 12px;
 }
-.total-progress-fill {
+.total-progress-text {
     font-weight: normal;
     font-size: 12px;
-    padding-bottom: 8px;
+    z-index: 2;
+    pointer-events: none;
+}
+.total-progress-fill {
+    z-index: 1;
 }
 .skill-name, .sub-skill-name {
     font-size: 12px;

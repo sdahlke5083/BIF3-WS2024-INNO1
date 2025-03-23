@@ -27,7 +27,8 @@ class block_compviz extends block_base {
 
     //Initialisiert den Block & setzt Titel
     public function init() {
-        $this->title = get_string('pluginname', 'block_compviz');
+        //$this->title = get_string('pluginname', 'block_compviz');
+        $this->title = '';
         //ruft Namen des Plugins ab
     }
 
@@ -84,6 +85,7 @@ class block_compviz extends block_base {
         }
     
         $data = [
+            'title' => get_string('pluginname', 'block_compviz'),
             'header' => get_string('skills_overview', 'block_compviz'),
             'totalProgress' => $totalprogress,
             'totalColor' => $this->get_progress_color($totalprogress),
