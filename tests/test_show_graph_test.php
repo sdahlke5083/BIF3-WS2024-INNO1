@@ -39,4 +39,5 @@ class test_show_graph_test extends \advanced_testcase {
     public function test_dummy() {
         $this->assertTrue(false);
     }
+    
 }
