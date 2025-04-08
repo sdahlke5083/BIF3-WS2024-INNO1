@@ -68,7 +68,7 @@ function block_compviz_get_current_course_category()
     global $DB, $COURSE;
 
     // SQL to get the course as category
-    $sql = "SELECT gc.id, gc.fullname
+    $sql = "SELECT gc.id, gc.fullname as name
         FROM {grade_categories} gc
         WHERE gc.courseid = :courseid
           AND gc.parent = null
@@ -100,7 +100,7 @@ function block_compviz_get_current_user_leos(int|null $parent_category_id = null
     }
 
     // SQL to join grade_items and grade_categories tables and filter by course
-    $sql = "SELECT gc.id, gc.fullname, gi.grademax, gi.grademin, gg.finalgrade
+    $sql = "SELECT gc.id, gc.fullname as name, gi.grademax, gi.grademin, gg.finalgrade
         FROM {grade_categories} gc
         JOIN {grade_items} gi 
         ON gi.iteminstance = gc.id
@@ -144,7 +144,7 @@ function block_compviz_get_current_user_grade_items(int|null $parent_categorie_i
     $where_category = "gi.categoryid = :parentcategoryid";
 
     // SQL to join grade_items and grade_grades tables and filter by course and user
-    $sql = "SELECT gi.id, gi.categoryid, gi.itemname, COALESCE(gg.finalgrade,gi.grademin) as finalgrade, gi.grademax, gi.grademin, gg.timemodified
+    $sql = "SELECT gi.id, gi.categoryid, gi.itemname as name, COALESCE(gg.finalgrade,gi.grademin) as finalgrade, gi.grademax, gi.grademin, gg.timemodified
         FROM {grade_items} gi
         LEFT JOIN {grade_grades} gg 
         ON gg.itemid = gi.id
@@ -182,10 +182,13 @@ function block_compviz_get_current_user_grade_items_by_category(int $leos_catego
     // Get all LEOs aka categories
     $leos = block_compviz_get_current_user_leos($leos_categorie_id);
 
+    $leos = array_values($leos);
+
     // Get all grade_items for each LEO and add them to the LEO object
     if (!empty($leos)) {
         foreach ($leos as $leo) {
-            $leo->grade_items = block_compviz_get_current_user_grade_items($leo->id);
+            $items = block_compviz_get_current_user_grade_items($leo->id);
+            $leo->grade_items = array_values($items);
         }
     }
     

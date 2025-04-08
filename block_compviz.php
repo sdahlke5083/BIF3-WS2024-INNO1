@@ -29,9 +29,8 @@ class block_compviz extends block_base {
 
     //Initialisiert den Block & setzt Titel
     public function init() {
-        //$this->title = get_string('pluginname', 'block_compviz');
-        $this->title = '';
         //ruft Namen des Plugins ab
+        $this->title = get_string('pluginname', 'block_compviz');
     }
 
     //Erstellt Inhalt des Blocks
@@ -61,48 +60,31 @@ class block_compviz extends block_base {
     private function block_compviz_render_skills_overview() {
         global $OUTPUT;
       
-        // DB Example to get data
-        /*
-        $moodle_version = block_compviz_get_moodle_version_from_db();
-        $gradings = block_compviz_get_current_user_grade_items_by_category(4); // 4 = ID der Kategorie "LEO's"
 
-        $templatedata = array_values($gradings);
-        //var_dump($templatedata);
-        */
-  
-        // Old static way
         $skills = $this->block_compviz_get_skills_data();
         $totalprogress = $this->block_compviz_get_total_progress($skills);
         $passingvalue = 75;
-    
-        $skillsData = [];
-        foreach ($skills as $name => $skill) {
-            $subSkillsData = [];
-            foreach ($skill['Sub-Skills'] as $key => $subSkill) {
-                $subSkillsData[] = [
-                    'name' => $key,
-                    'progress' => $subSkill,
-                    'passingValue' => $passingvalue,
-                    'color' => $this->get_progress_color($subSkill)
-                ];
+
+        
+        foreach ($skills as $skill) {
+            $progress = $this->block_compviz_get_progress($skill->finalgrade, $skill->grademax);
+            $skill->progress = $progress;
+            $skill->color = $this->get_progress_color($progress);
+            
+            foreach ($skill->grade_items as $subSkill) {
+                $progress = $this->block_compviz_get_progress($subSkill->finalgrade, $subSkill->grademax);
+                $subSkill->progress = $progress;
+                $subSkill->color = $this->get_progress_color($progress);
             }
-            $skillsData[] = [
-                'id' => uniqid(),
-                'name' => $name,
-                'progress' => $skill['Fortschritt'],
-                'passingValue' => $passingvalue,
-                'color' => $this->get_progress_color($skill['Fortschritt']),
-                'subSkills' => $subSkillsData
-            ];
         }
-    
+        
         $data = [
-            'title' => get_string('pluginname', 'block_compviz'),
+            'title' => $this->title,
             'header' => get_string('skills_overview', 'block_compviz'),
             'totalProgress' => $totalprogress,
             'totalColor' => $this->get_progress_color($totalprogress),
             'passingValue' => $passingvalue,
-            'skills' => $skillsData
+            'skills' => $skills
         ];
     
         return $OUTPUT->render_from_template('block_compviz/skills_overview', $data);
@@ -111,91 +93,31 @@ class block_compviz extends block_base {
 
     // Holt Daten der Skills
     private function block_compviz_get_skills_data() {
-        //global $DB, $USER;
 
-        $skills = [
-            'Conflict Handling' => [
-                'Fortschritt' => 100,
-                'Sub-Skills' => [
-                    'Merge Conflict' => 100,
-                    'Rebasing' => 100
-                ]
-            ],
-            'JavaScript' => [
-                'Fortschritt' => 80,
-                'Sub-Skills' => [
-                    'ES6' => 85,
-                    'Async Programming' => 75,
-                ]
-            ],
-            'Python' => [
-                'Fortschritt' => 60,
-                'Sub-Skills' => [
-                    'Data Structures' => 65,
-                    'Web Development' => 55,
-                ]
-            ],
-            'SQL' => [
-                'Fortschritt' => 40,
-                'Sub-Skills' => [
-                    'Basic Queries' => 45,
-                    'Joins' => 35,
-                ]
-            ],
-            'PHP' => [
-                'Fortschritt' => 50,
-                'Sub-Skills' => [
-                    'Syntax' => 55,
-                    'Functions' => 45,
-                ]
-            ],
-            'CSS' => [
-                'Fortschritt' => 90,
-                'Sub-Skills' => [
-                    'Flexbox' => 95,
-                    'Grid' => 85,
-                ]
-            ],
-            'Java' => [
-                'Fortschritt' => 70,
-                'Sub-Skills' => [
-                    'Basic Syntax' => 75,
-                    'OOP' => 65,
-                ]
-            ],
-            'C++' => [
-                'Fortschritt' => 30,
-                'Sub-Skills' => [
-                    'Syntax' => 35,
-                    'Memory Management' => 25,
-                ]
-            ],
-            'Data Structures' => [
-                'Fortschritt' => 20,
-                'Sub-Skills' => [
-                    'Arrays' => 15,
-                    'Linked Lists' => 25,
-                ]
-            ],
-            'Algorithms' => [
-                'Fortschritt' => 75,
-                'Sub-Skills' => [
-                    'Sorting' => 80,
-                    'Searching' => 70,
-                ]
-            ]
-        ];
+        // 4 = ID der Kategorie "LEO's" - später in Konfiguration anpassbar machen
+        $leos = block_compviz_get_current_user_grade_items_by_category(4); 
 
-        return $skills;
+        // in verwertbare Form bringen
+        $data = array_values($leos);
+        
+        return $data;
+    }
+
+
+    private function block_compviz_get_progress($grade, $maxgrade) {
+        if ($maxgrade == 0) {
+            return 0; // Avoid division by zero
+        }
+        return $grade / $maxgrade * 100;
     }
 
     // Berechnet Gesamtfortschritt
     private function block_compviz_get_total_progress($skills) {
         $totalprogress = 0;
         $count = 0;
-
+        
         foreach ($skills as $skill) {
-            $totalprogress += $skill['Fortschritt'];
+            $totalprogress += $skill->finalgrade;
             $count++;
         }
 
