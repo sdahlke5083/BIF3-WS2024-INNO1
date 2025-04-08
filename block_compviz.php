@@ -29,12 +29,14 @@ class block_compviz extends block_base {
 
     //Initialisiert den Block & setzt Titel
     public function init() {
-        $this->title = get_string('pluginname', 'block_compviz');
+        //$this->title = get_string('pluginname', 'block_compviz');
+        $this->title = '';
         //ruft Namen des Plugins ab
     }
 
     //Erstellt Inhalt des Blocks
     public function get_content() {
+        global $PAGE;
 
         //Existiert Inhalt vom Block schon?
         if ($this->content !== null) {
@@ -48,131 +50,157 @@ class block_compviz extends block_base {
 
         $this->content = new stdClass();
         // Diagramm mit flexibler Platzierung (da eigene Aufteilung) rendern
-        $this->content->text = $this->render_skills_chart();
+        $this->content->text = $this->block_compviz_render_skills_overview();
+        $this->content->footer = '';
+        $PAGE->requires->js_call_amd("block_compviz/skills_overview", "init");
 
         return $this->content;
     }
 
-    //Generiert Diagramm mit den Skills
-    private function render_skills_chart() {
+    // Generiert Diagramm mit Moustache Template
+    private function block_compviz_render_skills_overview() {
         global $OUTPUT;
-    
+      
+        // DB Example to get data
+        /*
         $moodle_version = block_compviz_get_moodle_version_from_db();
-        //$gradings = (array) block_compviz_get_current_user_grade_items();
         $gradings = block_compviz_get_current_user_grade_items_by_category(4); // 4 = ID der Kategorie "LEO's"
-
-        $html = "DB-Data: <br/>";
-        // Display Moodle version
-        $html .= "Moodle version: ";
-        $html .= $moodle_version;
-        $html .= "<br/>";
-        // Display block_compviz data	
-        if($gradings == [] ){ // if is empty array
-            $html .= "No data found";
-            return $html;
-        }
 
         $templatedata = array_values($gradings);
         //var_dump($templatedata);
-
-		$totalProgress = 50; // Beispielwert für den Gesamtfortschritt (kann später dynamisch berechnet werden)
-
-        $html .= '<div style="margin-bottom: 15px; font-size: 16px; font-weight: bold; text-align: center;">Skills Overview</div>';
-        $html .= '<div style="display: flex; flex-direction: column; gap: 5px;">';
-
-        // Horizontale Leiste für Gesamtfortschritt
-        $html .= '<div style="margin-bottom: 20px;">';
-        $html .= $this->render_horizontal_bar('Total', $totalProgress, false);
-        $html .= '</div>';
-
-        foreach ($templatedata as $leo) {
-            $leo = (array) $leo;
-            $html .= $this->render_collapsible_skill($leo["fullname"], $leo['finalgrade'], $leo['grademax'], $leo['grade_items']);
-        }
-        
-        $html .= '</div>'; // Hauptcontainer
-
-        return $html;
-    }
-
-    //Aufklappbare Skills/Sub-Skills
-    private function render_collapsible_skill($label, $progress, $max, $subskills) {
-        // Fortschrittsbalken mit dem Marker (Pfeil) innerhalb der Progressbar
-        $html = '<details>';
-        $html .= '<summary style="margin: 0; padding: 0; list-style: none;">' . $this->render_horizontal_bar($label, $progress, $max, true) . '</summary>';
-        if (!empty($subskills) && is_array($subskills)) {
-            $html .= '<div style="margin-left: 20px;">';
-            foreach ($subskills as $subskill) {               
-                    $subskill = (array) $subskill;
-                    $html .= $this->render_horizontal_bar($subskill["itemname"], $subskill["finalgrade"], $subskill["grademax"] ,false);
+        */
+  
+        // Old static way
+        $skills = $this->block_compviz_get_skills_data();
+        $totalprogress = $this->block_compviz_get_total_progress($skills);
+        $passingvalue = 75;
+    
+        $skillsData = [];
+        foreach ($skills as $name => $skill) {
+            $subSkillsData = [];
+            foreach ($skill['Sub-Skills'] as $key => $subSkill) {
+                $subSkillsData[] = [
+                    'name' => $key,
+                    'progress' => $subSkill,
+                    'passingValue' => $passingvalue,
+                    'color' => $this->get_progress_color($subSkill)
+                ];
             }
-            $html .= '</div>';
+            $skillsData[] = [
+                'id' => uniqid(),
+                'name' => $name,
+                'progress' => $skill['Fortschritt'],
+                'passingValue' => $passingvalue,
+                'color' => $this->get_progress_color($skill['Fortschritt']),
+                'subSkills' => $subSkillsData
+            ];
         }
-        $html .= '</details>';
     
-        return $html;
+        $data = [
+            'title' => get_string('pluginname', 'block_compviz'),
+            'header' => get_string('skills_overview', 'block_compviz'),
+            'totalProgress' => $totalprogress,
+            'totalColor' => $this->get_progress_color($totalprogress),
+            'passingValue' => $passingvalue,
+            'skills' => $skillsData
+        ];
+    
+        return $OUTPUT->render_from_template('block_compviz/skills_overview', $data);
     }
     
-    //Horizontaler Fortschrittsbalken
-    private function render_horizontal_bar($label, $progress, $max, $is_main_skill = false) {
-        //Fortschrittswert horizontal
-        if($max == 0) {
-            $bar_width = 0 . '%'; // Wenn max 0 ist, setze die Breite auf 0%
-        }else{
-            $bar_width = $progress/$max * 100 . '%'; // Prozentualer Wert für die Breite des Balkens
-        }
-        $background_color = $this->get_progress_color($progress);
-    
-        // Fortschrittsbalken-Inhalt: Label und Pfeil (bei Hauptskills)
-        $content = '<div style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; position: relative;">
-                        <span style="font-size: 12px;">' . $label . '</span>'; // Text mittig in Box
-        //Dropdown-Pfeil nur bei den Hauptskills (später auch für die subskills)
-        if ($is_main_skill) {
-            $content .= '<span style="position: absolute; right: 10px; font-size: 12px; cursor: pointer;">▼</span>'; // Dropdown-Pfeil rechts
-        }
-        $content .= '</div>';
-    
-        return '<div style="margin-bottom: 10px; display: flex; align-items: center; border: 1px solid #ccc; border-radius: 5px; background: #f4f4f4; width: 100%; height: 35px; position: relative;">
-                    <div style="width: ' . $bar_width . '; height: 100%; background-color: ' . $background_color . '; position: absolute; top: 0; left: 0; z-index: 0;"></div>
-                    <div style="position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; width: 100%; color: #333; font-weight: normal; font-size: 12px;">
-                        ' . $content . '
-                    </div>
-                </div>';
-    }
-    /*
-    //vertikale Fortschrittsanzeige
-    private function render_vertical_bar($label, $progress) {
-        //Fortschrittswert vertikal
-        $bar_height = $progress . '%';
-        $background_color = $this->get_progress_color($progress);
 
-        //Text steht über Leiste
-        return '<div style="text-align: center;">
-            <div style="font-size: 12px; color: #333; margin-bottom: 10px">' . $label . '</div>
-            <div style="width: 40px; height: 200px; border: 1px solid #ccc; border-radius: 5px; background: #f4f4f4; position: relative;">
-                <div style="height: ' . $bar_height . '; width: 100%; background-color: ' . $background_color . '; position: absolute; bottom: 0; display: flex; align-items: flex-end; justify-content: center; color: #333; font-weight: normal; font-size: 12px; padding-bottom: 8px;">
-                    ' . $progress . '%
-                </div>
-            </div>
-        </div>';
-    }
-    */
+    // Holt Daten der Skills
+    private function block_compviz_get_skills_data() {
+        //global $DB, $USER;
 
-    /* Grünes Konzept
-    private function get_progress_color($progress) {
-        if ($progress < 20) {
-            return '#EEFFBA'; 
-        } elseif ($progress < 40) {
-            return '#D6FA8C'; 
-        } elseif($progress < 60) {
-            return '#BEED53'; 
-        }elseif($progress < 80){
-			return '#A5D722'; 
-		}else{
-			return '#78AD00'; 
-		}
+        $skills = [
+            'Conflict Handling' => [
+                'Fortschritt' => 100,
+                'Sub-Skills' => [
+                    'Merge Conflict' => 100,
+                    'Rebasing' => 100
+                ]
+            ],
+            'JavaScript' => [
+                'Fortschritt' => 80,
+                'Sub-Skills' => [
+                    'ES6' => 85,
+                    'Async Programming' => 75,
+                ]
+            ],
+            'Python' => [
+                'Fortschritt' => 60,
+                'Sub-Skills' => [
+                    'Data Structures' => 65,
+                    'Web Development' => 55,
+                ]
+            ],
+            'SQL' => [
+                'Fortschritt' => 40,
+                'Sub-Skills' => [
+                    'Basic Queries' => 45,
+                    'Joins' => 35,
+                ]
+            ],
+            'PHP' => [
+                'Fortschritt' => 50,
+                'Sub-Skills' => [
+                    'Syntax' => 55,
+                    'Functions' => 45,
+                ]
+            ],
+            'CSS' => [
+                'Fortschritt' => 90,
+                'Sub-Skills' => [
+                    'Flexbox' => 95,
+                    'Grid' => 85,
+                ]
+            ],
+            'Java' => [
+                'Fortschritt' => 70,
+                'Sub-Skills' => [
+                    'Basic Syntax' => 75,
+                    'OOP' => 65,
+                ]
+            ],
+            'C++' => [
+                'Fortschritt' => 30,
+                'Sub-Skills' => [
+                    'Syntax' => 35,
+                    'Memory Management' => 25,
+                ]
+            ],
+            'Data Structures' => [
+                'Fortschritt' => 20,
+                'Sub-Skills' => [
+                    'Arrays' => 15,
+                    'Linked Lists' => 25,
+                ]
+            ],
+            'Algorithms' => [
+                'Fortschritt' => 75,
+                'Sub-Skills' => [
+                    'Sorting' => 80,
+                    'Searching' => 70,
+                ]
+            ]
+        ];
+
+        return $skills;
     }
-    */
+
+    // Berechnet Gesamtfortschritt
+    private function block_compviz_get_total_progress($skills) {
+        $totalprogress = 0;
+        $count = 0;
+
+        foreach ($skills as $skill) {
+            $totalprogress += $skill['Fortschritt'];
+            $count++;
+        }
+
+        return $totalprogress / $count;
+    }
 
     private function get_progress_color($progress) {
         if ($progress < 20) {
