@@ -58,7 +58,8 @@ class block_compviz extends block_base {
         global $OUTPUT;
     
         $moodle_version = block_compviz_get_moodle_version_from_db();
-        $gradings = (array) block_compviz_get_display_data();
+        //$gradings = (array) block_compviz_get_current_user_grade_items();
+        $gradings = block_compviz_get_current_user_grade_items_by_category(4); // 4 = ID der Kategorie "LEO's"
 
         $html = "DB-Data: <br/>";
         // Display Moodle version
@@ -71,8 +72,10 @@ class block_compviz extends block_base {
             return $html;
         }
 
+        $templatedata = array_values($gradings);
+        //var_dump($templatedata);
 
-		$totalProgress = array_sum(array_column($gradings, 'rawgrade')) / count($gradings);
+		$totalProgress = 50; // Beispielwert für den Gesamtfortschritt (kann später dynamisch berechnet werden)
 
         $html .= '<div style="margin-bottom: 15px; font-size: 16px; font-weight: bold; text-align: center;">Skills Overview</div>';
         $html .= '<div style="display: flex; flex-direction: column; gap: 5px;">';
@@ -82,11 +85,9 @@ class block_compviz extends block_base {
         $html .= $this->render_horizontal_bar('Total', $totalProgress, false);
         $html .= '</div>';
 
-        var_dump(gettype($gradings));
-
-        foreach ($gradings as $grade) {
-            $grade = (array) $grade;
-            $html .= $this->render_collapsible_skill($grade["itemname"], $grade['rawgrade'], []);
+        foreach ($templatedata as $leo) {
+            $leo = (array) $leo;
+            $html .= $this->render_collapsible_skill($leo["fullname"], $leo['finalgrade'], $leo['grademax'], $leo['grade_items']);
         }
         
         $html .= '</div>'; // Hauptcontainer
@@ -95,21 +96,15 @@ class block_compviz extends block_base {
     }
 
     //Aufklappbare Skills/Sub-Skills
-    private function render_collapsible_skill($label, $progress, $subskills) {
+    private function render_collapsible_skill($label, $progress, $max, $subskills) {
         // Fortschrittsbalken mit dem Marker (Pfeil) innerhalb der Progressbar
         $html = '<details>';
-        $html .= '<summary style="margin: 0; padding: 0; list-style: none;">' . $this->render_horizontal_bar($label, $progress, true) . '</summary>';
-        if (!empty($subskills)) {
+        $html .= '<summary style="margin: 0; padding: 0; list-style: none;">' . $this->render_horizontal_bar($label, $progress, $max, true) . '</summary>';
+        if (!empty($subskills) && is_array($subskills)) {
             $html .= '<div style="margin-left: 20px;">';
-            foreach ($subskills as $subskill => $subprogress) {
-                if(is_array($subprogress) && !empty($subprogress))
-                {
-                    $html .= $this->render_collapsible_skill($subskill, $subprogress['Fortschritt'], $subprogress['Sub-Skills']);
-                }
-                else
-                {
-                    $html .= $this->render_horizontal_bar($subskill, $subprogress, false);
-                }
+            foreach ($subskills as $subskill) {               
+                    $subskill = (array) $subskill;
+                    $html .= $this->render_horizontal_bar($subskill["itemname"], $subskill["finalgrade"], $subskill["grademax"] ,false);
             }
             $html .= '</div>';
         }
@@ -119,9 +114,13 @@ class block_compviz extends block_base {
     }
     
     //Horizontaler Fortschrittsbalken
-    private function render_horizontal_bar($label, $progress, $is_main_skill = false) {
+    private function render_horizontal_bar($label, $progress, $max, $is_main_skill = false) {
         //Fortschrittswert horizontal
-        $bar_width = $progress . '%';
+        if($max == 0) {
+            $bar_width = 0 . '%'; // Wenn max 0 ist, setze die Breite auf 0%
+        }else{
+            $bar_width = $progress/$max * 100 . '%'; // Prozentualer Wert für die Breite des Balkens
+        }
         $background_color = $this->get_progress_color($progress);
     
         // Fortschrittsbalken-Inhalt: Label und Pfeil (bei Hauptskills)
