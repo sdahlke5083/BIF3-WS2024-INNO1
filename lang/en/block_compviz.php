@@ -13,6 +13,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+//
+// More information: https://docs.moodle.org/dev/String_API/
 
 /**
  * Plugin strings are defined here.
@@ -23,8 +25,13 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+//defined('MOODLE_INTERNAL') || die();
 
-$string['compviz_name'] = 'Competence Visualization';
-$string['compviz:show_graph'] = 'Show Grading Graph';
+// predefined and basic required strings
 $string['pluginname'] = 'Competence Visualization';
+$string['compviz:show_graph'] = 'Show Grading Graph';
+$string['compviz:addinstance'] = 'Add new Competence Visualization block';
+$string['compviz:myaddinstance'] = 'Add new CompViz Block to My Moodle page';
+
+// strings for the block
+$string['skills_overview'] = 'Skills Overview';

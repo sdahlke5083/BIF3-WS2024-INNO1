@@ -26,9 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_compviz';
 $plugin->release = '0.1.0';
-$plugin->version = 2024111200;
+$plugin->version = 2025012601;
 $plugin->requires = 2022112800;
 $plugin->maturity = MATURITY_ALPHA;
-$plugin->dependencies = [
-    'core_grades' => 2022112800,
-];
+$plugin->dependencies = [];

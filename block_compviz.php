@@ -21,23 +21,22 @@
  * @copyright   2024 BIF-INNO-Group10
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+
 class block_compviz extends block_base {
 
-    /**
-     * Initializes class member variables.
-     */
+    //Initialisiert den Block & setzt Titel
     public function init() {
-        // Needed by Moodle to differentiate between blocks.
-        $this->title = get_string('pluginname', 'block_compviz');
+        //$this->title = get_string('pluginname', 'block_compviz');
+        $this->title = '';
+        //ruft Namen des Plugins ab
     }
 
-    /**
-     * Returns the block contents.
-     *
-     * @return stdClass The block contents.
-     */
+    //Erstellt Inhalt des Blocks
     public function get_content() {
+        global $PAGE;
 
+        //Existiert Inhalt vom Block schon?
         if ($this->content !== null) {
             return $this->content;
         }
@@ -48,53 +47,171 @@ class block_compviz extends block_base {
         }
 
         $this->content = new stdClass();
-        $this->content->items = array();
-        $this->content->icons = array();
+        // Diagramm mit flexibler Platzierung (da eigene Aufteilung) rendern
+        $this->content->text = $this->block_compviz_render_skills_overview();
         $this->content->footer = '';
-
-        if (!empty($this->config->text)) {
-            $this->content->text = $this->config->text;
-        } else {
-            $text = 'Please define the content text in /blocks/compviz/block_compviz.php.';
-            $this->content->text = $text;
-        }
+        $PAGE->requires->js_call_amd("block_compviz/skills_overview", "init");
 
         return $this->content;
     }
 
-    /**
-     * Defines configuration data.
-     *
-     * The function is called immediately after init().
-     */
-    public function specialization() {
-
-        // Load user defined title and make sure it's never empty.
-        if (empty($this->config->title)) {
-            $this->title = get_string('pluginname', 'block_compviz');
-        } else {
-            $this->title = $this->config->title;
+    // Generiert Diagramm mit Moustache Template
+    private function block_compviz_render_skills_overview() {
+        global $OUTPUT;
+    
+        $skills = $this->block_compviz_get_skills_data();
+        $totalprogress = $this->block_compviz_get_total_progress($skills);
+        $passingvalue = 75;
+    
+        $skillsData = [];
+        foreach ($skills as $name => $skill) {
+            $subSkillsData = [];
+            foreach ($skill['Sub-Skills'] as $key => $subSkill) {
+                $subSkillsData[] = [
+                    'name' => $key,
+                    'progress' => $subSkill,
+                    'passingValue' => $passingvalue,
+                    'color' => $this->get_progress_color($subSkill)
+                ];
+            }
+            $skillsData[] = [
+                'id' => uniqid(),
+                'name' => $name,
+                'progress' => $skill['Fortschritt'],
+                'passingValue' => $passingvalue,
+                'color' => $this->get_progress_color($skill['Fortschritt']),
+                'subSkills' => $subSkillsData
+            ];
         }
+    
+        $data = [
+            'title' => get_string('pluginname', 'block_compviz'),
+            'header' => get_string('skills_overview', 'block_compviz'),
+            'totalProgress' => $totalprogress,
+            'totalColor' => $this->get_progress_color($totalprogress),
+            'passingValue' => $passingvalue,
+            'skills' => $skillsData
+        ];
+    
+        return $OUTPUT->render_from_template('block_compviz/skills_overview', $data);
+    }
+    
+
+    // Holt Daten der Skills
+    private function block_compviz_get_skills_data() {
+        //global $DB, $USER;
+
+        $skills = [
+            'Conflict Handling' => [
+                'Fortschritt' => 100,
+                'Sub-Skills' => [
+                    'Merge Conflict' => 100,
+                    'Rebasing' => 100
+                ]
+            ],
+            'JavaScript' => [
+                'Fortschritt' => 80,
+                'Sub-Skills' => [
+                    'ES6' => 85,
+                    'Async Programming' => 75,
+                ]
+            ],
+            'Python' => [
+                'Fortschritt' => 60,
+                'Sub-Skills' => [
+                    'Data Structures' => 65,
+                    'Web Development' => 55,
+                ]
+            ],
+            'SQL' => [
+                'Fortschritt' => 40,
+                'Sub-Skills' => [
+                    'Basic Queries' => 45,
+                    'Joins' => 35,
+                ]
+            ],
+            'PHP' => [
+                'Fortschritt' => 50,
+                'Sub-Skills' => [
+                    'Syntax' => 55,
+                    'Functions' => 45,
+                ]
+            ],
+            'CSS' => [
+                'Fortschritt' => 90,
+                'Sub-Skills' => [
+                    'Flexbox' => 95,
+                    'Grid' => 85,
+                ]
+            ],
+            'Java' => [
+                'Fortschritt' => 70,
+                'Sub-Skills' => [
+                    'Basic Syntax' => 75,
+                    'OOP' => 65,
+                ]
+            ],
+            'C++' => [
+                'Fortschritt' => 30,
+                'Sub-Skills' => [
+                    'Syntax' => 35,
+                    'Memory Management' => 25,
+                ]
+            ],
+            'Data Structures' => [
+                'Fortschritt' => 20,
+                'Sub-Skills' => [
+                    'Arrays' => 15,
+                    'Linked Lists' => 25,
+                ]
+            ],
+            'Algorithms' => [
+                'Fortschritt' => 75,
+                'Sub-Skills' => [
+                    'Sorting' => 80,
+                    'Searching' => 70,
+                ]
+            ]
+        ];
+
+        return $skills;
     }
 
-    /**
-     * Enables global configuration of the block in settings.php.
-     *
-     * @return bool True if the global configuration is enabled.
-     */
+    // Berechnet Gesamtfortschritt
+    private function block_compviz_get_total_progress($skills) {
+        $totalprogress = 0;
+        $count = 0;
+
+        foreach ($skills as $skill) {
+            $totalprogress += $skill['Fortschritt'];
+            $count++;
+        }
+
+        return $totalprogress / $count;
+    }
+
+    private function get_progress_color($progress) {
+        if ($progress < 20) {
+            return '#D8F3DC'; 
+        } elseif ($progress < 40) {
+            return '#b7e4c7'; 
+        } elseif($progress < 60) {
+            return '#74c69d'; 
+        }elseif($progress < 80){
+			return '#52b788'; 
+		}else{
+			return '#40916C'; 
+		}
+    }
+
     public function has_config() {
         return true;
     }
 
-    /**
-     * Sets the applicable formats for the block.
-     *
-     * @return string[] Array of pages and permissions.
-     */
     public function applicable_formats() {
-        return array(
+        return [
             'course-view' => true,
             'site-index' => false,
-        );
+        ];
     }
 }
