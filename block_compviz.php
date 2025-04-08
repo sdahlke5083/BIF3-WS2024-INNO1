@@ -22,6 +22,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// import display_data.php
+require_once($CFG->dirroot . '/blocks/compviz/db/display_data.php');
 
 class block_compviz extends block_base {
 
@@ -58,7 +60,17 @@ class block_compviz extends block_base {
     // Generiert Diagramm mit Moustache Template
     private function block_compviz_render_skills_overview() {
         global $OUTPUT;
-    
+      
+        // DB Example to get data
+        /*
+        $moodle_version = block_compviz_get_moodle_version_from_db();
+        $gradings = block_compviz_get_current_user_grade_items_by_category(4); // 4 = ID der Kategorie "LEO's"
+
+        $templatedata = array_values($gradings);
+        //var_dump($templatedata);
+        */
+  
+        // Old static way
         $skills = $this->block_compviz_get_skills_data();
         $totalprogress = $this->block_compviz_get_total_progress($skills);
         $passingvalue = 75;

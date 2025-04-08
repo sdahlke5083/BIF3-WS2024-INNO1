@@ -27,6 +27,22 @@ Alternatively, you can run
 
 to complete the installation from the command line.
 
+## Learning Outcomes (LEOs) and Micro Learning Outcomes (µLEOs)
+
+**Learning Outcomes (LEOs)** describe what a learner is expected to know, do, or understand after completing a course or module. They guide curriculum design and help ensure alignment between teaching, learning, and assessment.  
+*Example: "Students will be able to apply basic statistical methods to analyze real-world data."*
+
+**Micro Learning Outcomes (µLEOs)** are smaller, more focused learning goals that support the achievement of a broader LEO. They allow for targeted instruction and detailed tracking of learner progress.  
+*Example: "Students can calculate mean, median, and mode from a dataset."*
+
+### Translating LEOs and µLEOs into Moodle Using Grades
+
+In Moodle, **µLEOs** can be represented as individual **grade items**, each tied to a specific activity, quiz question, or manual assessment. These items provide fine-grained insight into specific skills and knowledge areas.
+
+**LEOs** can be organized as **grade categories** that group related µLEO grade items. This structure allows Moodle to automatically calculate aggregated grades for each LEO, offering a clear overview of learner achievement at both micro and macro levels.
+
+
+
 ## License ##
 
 2024 BIF-INNO-Group10
