@@ -120,7 +120,10 @@ class block_compviz extends block_base {
             $totalprogress += $skill->finalgrade;
             $count++;
         }
-
+        if ($maxgrade == 0) {
+            return 0; // Avoid division by zero
+        }
+        
         return $totalprogress / $count;
     }
 
