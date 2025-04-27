@@ -139,6 +139,12 @@ class block_compviz extends block_base {
     }
 
     public function has_config() {
+        // enables the sitewide settings page for this block
+        return true;
+    }
+
+    public function instance_allow_config() {
+        // allows the block to be configured on a per-instance basis
         return true;
     }
 

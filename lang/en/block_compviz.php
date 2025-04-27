@@ -34,3 +34,7 @@ $string['compviz:addinstance'] = 'Add new Competence Visualization block';
 $string['compviz:myaddinstance'] = 'Add new CompViz Block to My Moodle page';
 // strings for the block
 $string['skills_overview'] = 'Skills Overview';
+$string['enabled'] = 'Enable';
+$string['enabled_desc'] = 'Enable the skills overview block on the course page.';
+$string['admin_settings_desc'] = 'Info:';
+$string['admin_settings_desc_desc'] = 'PoC for the global settings for the Competence Visualization block. Has currently no effect on the block itself.';
