@@ -61,7 +61,11 @@ class block_compviz extends block_base {
         global $OUTPUT;
       
 
-        $skills = $this->block_compviz_get_skills_data();
+        try {
+            $skills = $this->block_compviz_get_skills_data();
+        } catch (Exception $e) {
+            return "No data available";
+        }
         $totalprogress = $this->block_compviz_get_total_progress($skills);
         $passingvalue = 75;
 
@@ -119,6 +123,10 @@ class block_compviz extends block_base {
         foreach ($skills as $skill) {
             $totalprogress += $skill->finalgrade;
             $count++;
+        }
+
+        if ($count == 0) {
+            return 0; // Avoid division by zero
         }
 
         return $totalprogress / $count;
