@@ -36,7 +36,6 @@ class block_compviz_edit_form extends block_edit_form {
         // demo setting "enable"
         $mform->addElement('selectyesno', 'config_enable', get_string('enabled', 'block_compviz'));
         $mform->setDefault('config_enable', true);
-        $mform->addHelpButton('config_enable', get_string('enabled_desc', 'block_compviz'), 'block_compviz');
         $mform->setType('config_enable', PARAM_BOOL);
 
         // Please keep in mind that all elements defined here must start with 'config_'.

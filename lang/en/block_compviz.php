@@ -36,5 +36,16 @@ $string['compviz:myaddinstance'] = 'Add new CompViz Block to My Moodle page';
 $string['skills_overview'] = 'Skills Overview';
 $string['enabled'] = 'Enable';
 $string['enabled_desc'] = 'Enable the skills overview block on the course page.';
+$string['enabled_help'] = 'Enable the skills overview block on the course page.';
 $string['admin_settings_desc'] = 'Info:';
 $string['admin_settings_desc_desc'] = 'PoC for the global settings for the Competence Visualization block. Has currently no effect on the block itself.';
+
+// strings for the user settings form
+$string['usersettings'] = 'Settings';
+$string['show_completed'] = 'Show completed skills';
+$string['show_completed_help'] = 'Show or Hide completed skills in the skills overview block.';
+
+// strings for the privacy provider
+$string['privacy:metadata:block_compviz_enabled'] = 'The user preference for enabling the skills overview block.';
+$string['privacy:metadata:block_compviz_show_completed'] = 'The user preference for showing completed skills in the skills overview block.';
+$string['privacy:metadata:block_compviz'] = 'The Competence Visualization block stores user preferences for enabling the block and showing completed skills.';
