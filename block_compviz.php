@@ -71,11 +71,26 @@ class block_compviz extends block_base {
 
         
         foreach ($skills as $skill) {
+            //Begrenzung der LOs namen
+            $maxLenght = 25; 
+            if (strlen($skill->name) > $maxLength) {
+                $skill->name = substr($skill->name, 0, $maxLength) . '...';
+            }
+
+
+
             $progress = $this->block_compviz_get_progress($skill->finalgrade, $skill->grademax);
             $skill->progress = $progress;
             $skill->color = $this->get_progress_color($progress);
             
             foreach ($skill->grade_items as $subSkill) {
+                //Begrenzung des Lo namen
+                if (strlen($subSkill->name) > $maxLength) {
+                    $subSkill->name = substr($subSkill->name, 0, $maxLength) . '...';
+                }
+
+
+
                 $progress = $this->block_compviz_get_progress($subSkill->finalgrade, $subSkill->grademax);
                 $subSkill->progress = $progress;
                 $subSkill->color = $this->get_progress_color($progress);
