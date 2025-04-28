@@ -68,6 +68,8 @@ class block_compviz extends block_base {
         }
         $totalprogress = $this->block_compviz_get_total_progress($skills);
         $passingvalue = 75;
+        $options = new stdClass();
+        $options->showCompleted = true;
 
         
         foreach ($skills as $skill) {
@@ -75,10 +77,14 @@ class block_compviz extends block_base {
             $skill->progress = $progress;
             $skill->color = $this->get_progress_color($progress);
             
-            foreach ($skill->grade_items as $subSkill) {
+            foreach ($skill->grade_items as $key => $subSkill) {
                 $progress = $this->block_compviz_get_progress($subSkill->finalgrade, $subSkill->grademax);
                 $subSkill->progress = $progress;
                 $subSkill->color = $this->get_progress_color($progress);
+                if ($options->showCompleted == false && $subSkill->progress == 100) {
+                    // Skill ist abgeschlossen, also nicht anzeigen
+                    unset($skill->grade_items[$key]);
+                }
             }
         }
         
