@@ -63,6 +63,7 @@ class block_compviz extends block_base {
 
         try {
             $skills = $this->block_compviz_get_skills_data();
+            var_dump($skills);
         } catch (Exception $e) {
             return "No data available";
         }
@@ -73,17 +74,31 @@ class block_compviz extends block_base {
 
         
         foreach ($skills as $skill) {
+            //Begrenzung der LOs namen
+            $maxLength = 30; 
+            $skill->name = trim(preg_replace('/^\p{So}+\s*/u', '', $skill->name));
+                if (strlen($skill->name) > $maxLength) {
+                $skill->name = substr($skill->name, 0, $maxLength) . '...';
+            }
+
             $progress = $this->block_compviz_get_progress($skill->finalgrade, $skill->grademax);
             $skill->progress = $progress;
             $skill->color = $this->get_progress_color($progress);
             
             foreach ($skill->grade_items as $key => $subSkill) {
                 $progress = $this->block_compviz_get_progress($subSkill->finalgrade, $subSkill->grademax);
-                $subSkill->progress = $progress;
-                $subSkill->color = $this->get_progress_color($progress);
-                if ($options->showCompleted == false && $subSkill->progress == 100) {
+                if ($options->showCompleted == false && $progress >= 100) {
                     // Skill ist abgeschlossen, also nicht anzeigen
                     unset($skill->grade_items[$key]);
+                }
+                else{
+                    $subSkill->progress = $progress;
+                    $subSkill->color = $this->get_progress_color($progress);
+                    //Begrenzung des Lo namen
+                    $subSkill->name = trim(preg_replace('/^\p{So}+\s*/u', '', $subSkill->name));
+                    if (strlen($subSkill->name) > $maxLength) {
+                        $subSkill->name = substr($subSkill->name, 0, $maxLength) . '...';
+                    }
                 }
             }
         }
@@ -99,13 +114,12 @@ class block_compviz extends block_base {
     
         return $OUTPUT->render_from_template('block_compviz/skills_overview', $data);
     }
-    
 
     // Holt Daten der Skills
     private function block_compviz_get_skills_data() {
 
         // 4 = ID der Kategorie "LEO's" - später in Konfiguration anpassbar machen
-        $leos = block_compviz_get_current_user_grade_items_by_category(4); 
+        $leos = block_compviz_get_current_user_grade_items_by_category(35); 
 
         // in verwertbare Form bringen
         $data = array_values($leos);
