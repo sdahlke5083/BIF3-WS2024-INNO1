@@ -1,50 +1,49 @@
-define(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, ModalSaveCancel, ModalEvents) {
+define([
+    'core_form/modalform',
+    'core/str',
+    'core/notification',
+], function (ModalForm, Str, Notification) {
 
     /**
-     * Öffnet einen Modal-Dialog und lädt die Seite per Ajax hinein.
-     * Funktioniert ab Moodle 3.9 aufwärts.
-     *
-     * @param {String} selector CSS-Selector für die Links.
+     * Öffnet Modal mit dynamic_form.
+     * @param {String} selector  CSS-Selector für den Link
      */
     const init = selector => {
-        $(document).on('click', selector, e => {
+
+        document.addEventListener('click', e => {
+            const link = e.target.closest(selector);
+            if (!link) {
+                return;
+            }
             e.preventDefault();
 
-            const $link = $(e.currentTarget);
-            const title = $link.data('title') || '';
-            const url = $link.attr('href');
-
-            // Seite via Ajax holen.
-            $.get(url).then(html => {
-
-                // Modal bauen.
-                return ModalSaveCancel.create({
-                    title: title,
-                    body: $(html),
-                    large: true
-                }).bind(this).then(modal => {
-                    this.modal = modal;
-                    this.modal.setLarge();
-                    
-                    $(this.modal.getRoot()).on(ModalEvents.hidden, function () {
-                        this.modal.setBody(this.getBody());
-                    }.bind(this));
-
-                    $(this.modal.getRoot()).on(ModalEvents.show, function () {
-                        this.modal.getRoot().append('<style>[data-fieldtype=submit] { display: none ! important; }</style>');
-                    }.bind(this));
-
-                    // Bei Redirect (Form gespeichert / abgebrochen) → Modal zu + Seite neu.
-                    $(modal.getRoot()).on(ModalEvents.save, this.submitForm.bind(this));
-                    $(modal.getRoot()).on(ModalEvents.cancel, () => modal.destroy());
-
-
-                    modal.show();
-                });
-
-            }).fail(() => {
-                // no Fallback
+            // ModalForm erzeugen
+            const modalForm = new ModalForm({
+                formClass: 'block_compviz\\form\\user_form',
+                // keine zusätzlichen args nötig – könnten hier übergeben werden
+                modalConfig: { title: link.dataset.title },
+                returnFocus: link
             });
+
+            // nach Submit: Seite neu laden + Success-Toast
+            modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, e => {
+                const detail = e.detail;                   // {message: '…'}
+                Notification.addNotification({
+                    message: detail.message,
+                    type: 'success'
+                });
+                window.location.reload();
+            });
+
+            modalForm.addEventListener(modalForm.events.SUBMITTING, () => {
+                modalForm.getRoot().addClass('loading');
+            });
+            modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, () => {
+                modalForm.getRoot().removeClass('loading');
+            });
+
+
+            modalForm.show();
         });
     };
 

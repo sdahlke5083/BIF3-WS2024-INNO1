@@ -38,7 +38,7 @@ class block_compviz extends block_base
     //Erstellt Inhalt des Blocks
     public function get_content()
     {
-        global $PAGE;
+        global $USER;
 
         // Wenn Block global deaktiviert ist, dann nichts zurückgeben
         if (get_config('block_compviz', 'enabled') == 0) {
@@ -60,7 +60,11 @@ class block_compviz extends block_base
         // Diagramm mit flexibler Platzierung (da eigene Aufteilung) rendern
         $this->content->text = $this->block_compviz_render_skills_overview();
         $this->content->footer = '';
-        $PAGE->requires->js_call_amd("block_compviz/skills_overview", "init");
+
+        //user settings
+        $demo = get_user_preferences('block_compviz_enabled', 'not set', $USER->id);
+        var_dump($demo);
+
 
         return $this->content;
     }
@@ -158,13 +162,9 @@ class block_compviz extends block_base
         $bc = parent::get_content_for_output($output);
 
         if ($bc && isloggedin() && !isguestuser()) {
-            $url = new moodle_url('/blocks/compviz/usersettings/user.php', [
-                'returnurl' => $this->page->url->out_as_local_url(false),
-                'sesskey'   => sesskey()
-            ]);
-
+            
             $link = new action_menu_link_primary(
-                $url,
+                new moodle_url('#', null),
                 new pix_icon(
                     'i/settings',
                     get_string('usersettings', 'block_compviz')

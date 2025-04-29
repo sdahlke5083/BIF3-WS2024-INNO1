@@ -25,11 +25,14 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-require_once($CFG->libdir . '/formslib.php');
+namespace block_compviz\form;
+use core_form\dynamic_form;
 
-class block_compviz_user_form extends moodleform
+defined('MOODLE_INTERNAL') || die();
+
+class user_form extends dynamic_form
 {
+
     public function definition()
     {
         $mform = $this->_form;
@@ -46,8 +49,46 @@ class block_compviz_user_form extends moodleform
         $mform->addElement('checkbox', 'show_completed', get_string('show_completed', 'block_compviz'));
         $mform->setDefault('show_completed', 1);
         $mform->addHelpButton('show_completed', 'show_completed', 'block_compviz');
-        
+
         // Add a button to save the settings.
-        $this->add_action_buttons();
+        //$this->add_action_buttons();
+    }
+
+    protected function get_context_for_dynamic_submission(): \context
+    {
+        global $USER;
+        return \context_user::instance($USER->id);
+    }
+
+    public function check_access_for_dynamic_submission(): void
+    {
+        // no rights check required
+    }
+
+    public function set_data_for_dynamic_submission(): void
+    {
+        global $USER;
+        $data = new \stdClass();
+        $data->enabled = get_user_preferences('block_compviz_enabled', 1, $USER->id);
+        $data->show_completed = get_user_preferences('block_compviz_show_completed', 1, $USER->id);
+        $this->set_data($data);
+    }
+
+    public function process_dynamic_submission(): array
+    {
+        global $USER;
+        $data = (object)$this->get_data();
+        if ($data) {
+            set_user_preference('block_compviz_enabled', $data->enabled ?? 0, $USER->id);
+            set_user_preference('block_compviz_show_completed', $data->show_completed ?? 0, $USER->id);
+            return ['success' => true, 'message' => get_string('settingssaved', 'block_compviz')];
+        } else {
+            return ['success' => false, 'message' => get_string('settingsnotsaved', 'block_compviz')];
+        }
+    }
+
+    protected function get_page_url_for_dynamic_submission(): \moodle_url
+    {
+        return new \moodle_url('/course');
     }
 }
