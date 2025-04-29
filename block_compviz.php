@@ -25,17 +25,26 @@
 // import display_data.php
 require_once($CFG->dirroot . '/blocks/compviz/db/display_data.php');
 
-class block_compviz extends block_base {
+class block_compviz extends block_base
+{
 
     //Initialisiert den Block & setzt Titel
-    public function init() {
+    public function init()
+    {
         //ruft Namen des Plugins ab
         $this->title = get_string('pluginname', 'block_compviz');
     }
 
     //Erstellt Inhalt des Blocks
-    public function get_content() {
-        global $PAGE;
+    public function get_content()
+    {
+        global $USER;
+
+        // Wenn Block global deaktiviert ist, dann nichts zurückgeben
+        if (get_config('block_compviz', 'enabled') == 0) {
+            $this->content = '';
+            return $this->content;
+        }
 
         //Existiert Inhalt vom Block schon?
         if ($this->content !== null) {
@@ -51,15 +60,20 @@ class block_compviz extends block_base {
         // Diagramm mit flexibler Platzierung (da eigene Aufteilung) rendern
         $this->content->text = $this->block_compviz_render_skills_overview();
         $this->content->footer = '';
-        $PAGE->requires->js_call_amd("block_compviz/skills_overview", "init");
+
+        //user settings
+        $demo = get_user_preferences('block_compviz_enabled', 'not set', $USER->id);
+        var_dump($demo);
+
 
         return $this->content;
     }
 
     // Generiert Diagramm mit Moustache Template
-    private function block_compviz_render_skills_overview() {
+    private function block_compviz_render_skills_overview()
+    {
         global $OUTPUT;
-      
+
 
         try {
             $skills = $this->block_compviz_get_skills_data();
@@ -72,7 +86,7 @@ class block_compviz extends block_base {
         $options = new stdClass();
         $options->showCompleted = true;
 
-        
+
         foreach ($skills as $skill) {
             //Begrenzung der LOs namen
             $maxLength = 30; 
@@ -102,7 +116,7 @@ class block_compviz extends block_base {
                 }
             }
         }
-        
+
         $data = [
             'title' => $this->title,
             'header' => get_string('skills_overview', 'block_compviz'),
@@ -111,24 +125,27 @@ class block_compviz extends block_base {
             'passingValue' => $passingvalue,
             'skills' => $skills
         ];
-    
+
         return $OUTPUT->render_from_template('block_compviz/skills_overview', $data);
     }
 
+
     // Holt Daten der Skills
-    private function block_compviz_get_skills_data() {
+    private function block_compviz_get_skills_data()
+    {
 
         // 4 = ID der Kategorie "LEO's" - später in Konfiguration anpassbar machen
         $leos = block_compviz_get_current_user_grade_items_by_category(35); 
 
         // in verwertbare Form bringen
         $data = array_values($leos);
-        
+
         return $data;
     }
 
 
-    private function block_compviz_get_progress($grade, $maxgrade) {
+    private function block_compviz_get_progress($grade, $maxgrade)
+    {
         if ($maxgrade == 0) {
             return 0; // Avoid division by zero
         }
@@ -136,10 +153,11 @@ class block_compviz extends block_base {
     }
 
     // Berechnet Gesamtfortschritt
-    private function block_compviz_get_total_progress($skills) {
+    private function block_compviz_get_total_progress($skills)
+    {
         $totalprogress = 0;
         $count = 0;
-        
+
         foreach ($skills as $skill) {
             $totalprogress += $skill->finalgrade;
             $count++;
@@ -152,25 +170,67 @@ class block_compviz extends block_base {
         return $totalprogress / $count;
     }
 
-    private function get_progress_color($progress) {
+    private function get_progress_color($progress)
+    {
         if ($progress < 20) {
-            return '#D8F3DC'; 
+            return '#D8F3DC';
         } elseif ($progress < 40) {
-            return '#b7e4c7'; 
-        } elseif($progress < 60) {
-            return '#74c69d'; 
-        }elseif($progress < 80){
-			return '#52b788'; 
-		}else{
-			return '#40916C'; 
-		}
+            return '#b7e4c7';
+        } elseif ($progress < 60) {
+            return '#74c69d';
+        } elseif ($progress < 80) {
+            return '#52b788';
+        } else {
+            return '#40916C';
+        }
     }
 
-    public function has_config() {
+
+    public function get_content_for_output($output)
+    {
+        $bc = parent::get_content_for_output($output);
+
+        if ($bc && isloggedin() && !isguestuser()) {
+            
+            $link = new action_menu_link_primary(
+                new moodle_url('#', null),
+                new pix_icon(
+                    'i/settings',
+                    get_string('usersettings', 'block_compviz')
+                ),
+                get_string('usersettings', 'block_compviz'),
+                [
+                    'class' => 'editing_usersettings',
+                    'data-title' => get_string('usersettings', 'block_compviz'),
+                    ]
+            );
+
+            array_unshift($bc->controls, $link);          // gleich vorne anzeigen
+        }
+        return $bc;
+    }
+
+    public function get_required_javascript()
+    {
+        parent::get_required_javascript();
+        $this->page->requires->js_call_amd('block_compviz/skills_overview', 'init');
+        $this->page->requires->js_call_amd('block_compviz/user_settings', 'init', ['.editing_usersettings']);
+    }
+
+    public function has_config()
+    {
+        // enables the sitewide settings page for this block
         return true;
     }
 
-    public function applicable_formats() {
+    public function instance_allow_config()
+    {
+        // allows the block to be configured on a per-instance basis
+        return true;
+    }
+
+    public function applicable_formats()
+    {
         return [
             'course-view' => true,
             'site-index' => false,
