@@ -61,30 +61,24 @@ class block_compviz extends block_base
         $this->content->text = $this->block_compviz_render_skills_overview();
         $this->content->footer = '';
 
-        //user settings
-        $demo = get_user_preferences('block_compviz_enabled', 'not set', $USER->id);
-        var_dump($demo);
-
-
         return $this->content;
     }
 
     // Generiert Diagramm mit Moustache Template
     private function block_compviz_render_skills_overview()
     {
-        global $OUTPUT;
+        global $OUTPUT, $USER;
 
 
         try {
             $skills = $this->block_compviz_get_skills_data();
-            var_dump($skills);
         } catch (Exception $e) {
             return "No data available";
         }
         $totalprogress = $this->block_compviz_get_total_progress($skills);
         $passingvalue = 75;
         $options = new stdClass();
-        $options->showCompleted = true;
+        $options->showCompleted = $this->get_user_settings_as_bool('show_completed', $USER->id);
 
 
         foreach ($skills as $skill) {
@@ -135,7 +129,7 @@ class block_compviz extends block_base
     {
 
         // 4 = ID der Kategorie "LEO's" - später in Konfiguration anpassbar machen
-        $leos = block_compviz_get_current_user_grade_items_by_category(35); 
+        $leos = block_compviz_get_current_user_grade_items_by_category(leos_categorie_id: 4); 
 
         // in verwertbare Form bringen
         $data = array_values($leos);
@@ -167,7 +161,9 @@ class block_compviz extends block_base
             return 0; // Avoid division by zero
         }
 
-        return $totalprogress / $count;
+        $result = $totalprogress / $count;
+
+        return round($result, 2);
     }
 
     private function get_progress_color($progress)
@@ -185,6 +181,15 @@ class block_compviz extends block_base
         }
     }
 
+
+    private function get_user_settings_as_bool($setting, $userid){
+        $value = get_user_preferences('block_compviz_' . $setting, 'not set', $userid);
+        if ($value != 'not set') {
+            return $value == 1 ? true : false;
+        } else {
+            return true;
+        }
+    }
 
     public function get_content_for_output($output)
     {
