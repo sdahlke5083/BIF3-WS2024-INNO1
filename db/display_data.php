@@ -141,19 +141,35 @@ function block_compviz_get_current_user_grade_items(int|null $parent_categorie_i
 {
     global $DB, $COURSE, $USER;
 
-    $where_category = "gi.categoryid = :parentcategoryid";
-
-    // SQL to join grade_items and grade_grades tables and filter by course and user
-    $sql = "SELECT gi.id, gi.categoryid, gi.itemname as name, COALESCE(gg.finalgrade,gi.grademin) as finalgrade, gi.grademax, gi.grademin, gg.timemodified
-        FROM {grade_items} gi
-        LEFT JOIN {grade_grades} gg 
-        ON gg.itemid = gi.id
-          AND gg.userid = :userid
-        WHERE gi.courseid = :courseid
-        " . ($parent_categorie_id != null ? "AND $where_category" : "") . "
-          AND gi.hidden = 0
-          AND gi.itemtype = 'mod'
-        ORDER BY gi.sortorder ASC;";
+    // SQL to join grade_items -> modules -> course_modules, and filter by course and user
+    $sql = "SELECT 
+               gi.id,
+               gi.categoryid,
+               gi.itemname     AS name,
+               COALESCE(gg.finalgrade, gi.grademin) AS finalgrade,
+               gi.grademax,
+               gi.grademin,
+               gg.timemodified,
+               gi.itemmodule,
+               gi.iteminstance,
+               cm.id          AS cmid
+            FROM {grade_items} gi
+            LEFT JOIN {grade_grades} gg 
+              ON gg.itemid = gi.id 
+             AND gg.userid = :userid
+            LEFT JOIN {modules} m 
+              ON m.name = gi.itemmodule
+            LEFT JOIN {course_modules} cm 
+              ON cm.module   = m.id 
+             AND cm.instance = gi.iteminstance 
+             AND cm.course   = gi.courseid
+            WHERE gi.courseid = :courseid
+              " . ($parent_categorie_id !== null 
+                    ? "AND gi.categoryid = :parentcategoryid" 
+                    : "") . "
+              AND gi.hidden   = 0
+              AND gi.itemtype = 'mod'
+            ORDER BY gi.sortorder ASC";
 
     // Parameters for the query
     $params = [
@@ -165,11 +181,8 @@ function block_compviz_get_current_user_grade_items(int|null $parent_categorie_i
     // Execute the query
     $gradings = $DB->get_records_sql($sql, $params);
 
-    // Return first grading if exists
-    if (!empty($gradings)) {
-        return (array) $gradings;
-    }
-    return [];
+    // Return result array
+    return !empty($gradings) ? (array) $gradings : [];
 }
 
 /** Get all grade_items for the current course and user

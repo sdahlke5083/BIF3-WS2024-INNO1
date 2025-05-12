@@ -108,6 +108,14 @@ class block_compviz extends block_base
                         $subSkill->name = substr($subSkill->name, 0, $maxLength) . '...';
                     }
                 }
+                if (!empty($subSkill->cmid) && !empty($subSkill->itemmodule)) {
+                    $subSkill->url = new moodle_url(
+                        '/mod/' . $subSkill->itemmodule . '/view.php',
+                        ['id' => $subSkill->cmid]
+                    );
+                } else {
+                    $subSkill->url = null;
+                }
             }
         }
 
@@ -129,7 +137,7 @@ class block_compviz extends block_base
     {
 
         // 4 = ID der Kategorie "LEO's" - später in Konfiguration anpassbar machen
-        $leos = block_compviz_get_current_user_grade_items_by_category(leos_categorie_id: 4); 
+        $leos = block_compviz_get_current_user_grade_items_by_category(leos_categorie_id: 35); 
 
         // in verwertbare Form bringen
         $data = array_values($leos);

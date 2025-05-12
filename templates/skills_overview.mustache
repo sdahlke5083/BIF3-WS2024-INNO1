@@ -67,7 +67,14 @@
                     <div class="sub-skill-progress-bar d-flex align-items-center bg-light border rounded position-relative mb-2" style="height: 35px;">
                         <div class="sub-skill-progress-fill position-absolute top-0 start-0 h-100" style="width: {{progress}}%; background-color: {{color}};"></div>
                         <div class="sub-skill-progress-text position-relative w-100 d-flex align-items-center justify-content-center text-dark">
-                            <div class="sub-skill-name">{{name}}</div>
+                            {{#url}}
+                                <a href="{{url}}" class="sub-skill-link w-100 d-block text-decoration-none">
+                                    <div class="sub-skill-name">{{name}}</div>
+                                </a>
+                            {{/url}}
+                            {{^url}}
+                                <div class="sub-skill-name">{{name}}</div>
+                            {{/url}}
                         </div>
                     </div>
                 </div>
