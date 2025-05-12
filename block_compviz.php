@@ -80,7 +80,6 @@ class block_compviz extends block_base
         $options = new stdClass();
         $options->showCompleted = $this->get_user_settings_as_bool('show_completed', $USER->id);
 
-
         foreach ($skills as $skill) {
             //Begrenzung der LOs namen
             $maxLength = 30; 
@@ -128,8 +127,9 @@ class block_compviz extends block_base
     private function block_compviz_get_skills_data()
     {
 
-        // 4 = ID der Kategorie "LEO's" - später in Konfiguration anpassbar machen
-        $leos = block_compviz_get_current_user_grade_items_by_category(leos_categorie_id: 4); 
+        $leo_category_id = $this->config->select_leo ?? block_compviz_get_default_leo_category();
+        
+        $leos = block_compviz_get_current_user_grade_items_by_category(leos_categorie_id: $leo_category_id); 
 
         // in verwertbare Form bringen
         $data = array_values($leos);
@@ -191,6 +191,7 @@ class block_compviz extends block_base
         }
     }
 
+    // Adds a settings link to the block's breadcrumb navigation
     public function get_content_for_output($output)
     {
         $bc = parent::get_content_for_output($output);
@@ -239,6 +240,8 @@ class block_compviz extends block_base
         return [
             'course-view' => true,
             'site-index' => false,
+            '*' => false,
+            'my' => false
         ];
     }
 }
