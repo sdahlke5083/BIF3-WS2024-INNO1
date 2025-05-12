@@ -107,6 +107,14 @@ class block_compviz extends block_base
                         $subSkill->name = substr($subSkill->name, 0, $maxLength) . '...';
                     }
                 }
+                if (!empty($subSkill->cmid) && !empty($subSkill->itemmodule)) {
+                    $subSkill->url = new moodle_url(
+                        '/mod/' . $subSkill->itemmodule . '/view.php',
+                        ['id' => $subSkill->cmid]
+                    );
+                } else {
+                    $subSkill->url = null;
+                }
             }
         }
 
