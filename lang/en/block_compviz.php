@@ -40,6 +40,11 @@ $string['enabled_help'] = 'Enable the skills overview block on the course page.'
 $string['admin_settings_desc'] = 'Info:';
 $string['admin_settings_desc_desc'] = 'PoC for the global settings for the Competence Visualization block. Has currently no effect on the block itself.';
 
+// strings for the settings form
+$string['select_leo'] = 'Select Learning Outcome Category';
+$string['select_leo_desc'] = 'Select the Learning Outcome Category for the skills overview block.';
+$string['select_leo_help'] = 'Select a Grading Category for the skills overview block. This will be used to display the skills in the block.';
+
 // strings for the user settings form
 $string['usersettings'] = 'Settings';
 $string['show_completed'] = 'Show completed skills';

@@ -33,7 +33,7 @@ $context   = context_user::instance($USER->id);
 
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('popup');
-$PAGE->set_url(new moodle_url('/blocks/compviz/usersettings/user.php'));
+$PAGE->set_url(new moodle_url('/blocks/compviz/settings/user_settings.php'));
 $PAGE->set_title(get_string('usersettings', 'block_compviz'));
 
 $form = new block_compviz_user_form(null, null, 'post', '', null, true, ['id' => 'usersettings']);

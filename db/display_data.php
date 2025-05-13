@@ -42,11 +42,16 @@ function block_compviz_get_current_course_learning_outcomes_category()
     global $DB, $COURSE;
 
     // Using subquery to find categories with subcategories
-    $sql = "SELECT gc.id, gc.fullname
+    $sql = "SELECT gc.id, 
+            CASE 
+                WHEN gc.parent IS NULL
+                    THEN (SELECT c.fullname FROM {course} c WHERE c.id = gc.courseid)
+                ELSE gc.fullname
+            END AS fullname
         FROM {grade_categories} gc
         WHERE gc.courseid = :courseid
           AND (SELECT COUNT(*) FROM {grade_categories} gc_sub WHERE gc_sub.parent = gc.id) > 0
-        ORDER BY gc.sortorder ASC";
+        ORDER BY gc.id ASC";
 
     // Parameters for the query
     $params = [
@@ -56,9 +61,15 @@ function block_compviz_get_current_course_learning_outcomes_category()
     // Execute the query
     $leos = $DB->get_records_sql($sql, $params);
 
+    // convert to key => value array
+    $array = [];
+    foreach ($leos as $leo) {
+        $array[$leo->id] = $leo->fullname;
+    }
+
     // if this returns an empty array, this course can't be used for LEO's & µLEO's -> see Readme
     if (!empty($leos)) {
-        return (array) $leos;
+        return (array) $array;
     }
     return [];
 }
@@ -71,8 +82,8 @@ function block_compviz_get_current_course_category()
     $sql = "SELECT gc.id, gc.fullname as name
         FROM {grade_categories} gc
         WHERE gc.courseid = :courseid
-          AND gc.parent = null
-        ORDER BY gc.sortorder ASC";
+          AND gc.parent IS NULL
+        ORDER BY gc.id ASC";
 
     // Parameters for the query
     $params = [
@@ -86,7 +97,31 @@ function block_compviz_get_current_course_category()
     if (!empty($course_category)) {
         return $course_category;
     }
-    throw new dml_read_exception('No course category found', $sql, $params);
+    throw new dml_read_exception('No categorie for course found!', $sql, $params);
+}
+
+// Try to get default LEO category from the database
+function block_compviz_get_default_leo_category()
+{
+    $possible_leos = block_compviz_get_current_course_learning_outcomes_category();
+    $leo_category = null;
+    if (!empty($possible_leos)) {
+        // search for a category with the name "LEO" or "Learning Outcomes"
+        foreach ($possible_leos as $leo=>$leo_name) {
+            $leo_name_lower = strtolower($leo_name);
+            if (stripos($leo_name_lower, 'leo') !== false || stripos($leo_name_lower, 'learning outcomes') !== false) {
+                $leo_category = $leo;
+                break;
+            }
+        }
+
+    }
+    if ($leo_category == null) {
+        // if no category was found, choose the course category as default
+        $leo_category = block_compviz_get_current_course_category()->id;
+    }
+
+    return $leo_category;
 }
 
 // Get LEO's (which will be grading_categories) from the database
@@ -141,19 +176,35 @@ function block_compviz_get_current_user_grade_items(int|null $parent_categorie_i
 {
     global $DB, $COURSE, $USER;
 
-    $where_category = "gi.categoryid = :parentcategoryid";
-
-    // SQL to join grade_items and grade_grades tables and filter by course and user
-    $sql = "SELECT gi.id, gi.categoryid, gi.itemname as name, COALESCE(gg.finalgrade,gi.grademin) as finalgrade, gi.grademax, gi.grademin, gg.timemodified
-        FROM {grade_items} gi
-        LEFT JOIN {grade_grades} gg 
-        ON gg.itemid = gi.id
-          AND gg.userid = :userid
-        WHERE gi.courseid = :courseid
-        " . ($parent_categorie_id != null ? "AND $where_category" : "") . "
-          AND gi.hidden = 0
-          AND gi.itemtype = 'mod'
-        ORDER BY gi.sortorder ASC;";
+    // SQL to join grade_items -> modules -> course_modules, and filter by course and user
+    $sql = "SELECT 
+               gi.id,
+               gi.categoryid,
+               gi.itemname     AS name,
+               COALESCE(gg.finalgrade, gi.grademin) AS finalgrade,
+               gi.grademax,
+               gi.grademin,
+               gg.timemodified,
+               gi.itemmodule,
+               gi.iteminstance,
+               cm.id          AS cmid
+            FROM {grade_items} gi
+            LEFT JOIN {grade_grades} gg 
+              ON gg.itemid = gi.id 
+             AND gg.userid = :userid
+            LEFT JOIN {modules} m 
+              ON m.name = gi.itemmodule
+            LEFT JOIN {course_modules} cm 
+              ON cm.module   = m.id 
+             AND cm.instance = gi.iteminstance 
+             AND cm.course   = gi.courseid
+            WHERE gi.courseid = :courseid
+              " . ($parent_categorie_id !== null 
+                    ? "AND gi.categoryid = :parentcategoryid" 
+                    : "") . "
+              AND gi.hidden   = 0
+              AND gi.itemtype = 'mod'
+            ORDER BY gi.sortorder ASC";
 
     // Parameters for the query
     $params = [
@@ -165,11 +216,8 @@ function block_compviz_get_current_user_grade_items(int|null $parent_categorie_i
     // Execute the query
     $gradings = $DB->get_records_sql($sql, $params);
 
-    // Return first grading if exists
-    if (!empty($gradings)) {
-        return (array) $gradings;
-    }
-    return [];
+    // Return result array
+    return !empty($gradings) ? (array) $gradings : [];
 }
 
 /** Get all grade_items for the current course and user
