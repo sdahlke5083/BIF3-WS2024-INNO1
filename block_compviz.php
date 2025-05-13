@@ -111,6 +111,7 @@ class block_compviz extends block_base
             }
         }
 
+        //var_dump($skills);
         $data = [
             'title' => $this->title,
             'header' => get_string('skills_overview', 'block_compviz'),
@@ -127,9 +128,12 @@ class block_compviz extends block_base
     // Holt Daten der Skills
     private function block_compviz_get_skills_data()
     {
+        global $CFG, $COURSE;
+        require_once($CFG->libdir.'/gradelib.php');
+        grade_regrade_final_grades($COURSE->id);
 
         // 4 = ID der Kategorie "LEO's" - später in Konfiguration anpassbar machen
-        $leos = block_compviz_get_current_user_grade_items_by_category(leos_categorie_id: 4); 
+        $leos = block_compviz_get_current_user_grade_items_by_category(leos_categorie_id: 104); 
 
         // in verwertbare Form bringen
         $data = array_values($leos);
