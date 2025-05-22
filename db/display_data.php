@@ -135,13 +135,17 @@ function block_compviz_get_current_user_leos(int|null $parent_category_id = null
     }
 
     // SQL to join grade_items and grade_categories tables and filter by course
-    $sql = "SELECT gc.id, gc.fullname as name, gi.grademax, gi.grademin, gg.finalgrade
+    $sql = "SELECT gc.id, gc.fullname as name, gi.grademax, gi.grademin,
+        CASE
+            WHEN gg.finalgrade IS NOT NULL 
+                THEN gg.finalgrade
+        END AS finalgrade
         FROM {grade_categories} gc
         JOIN {grade_items} gi 
         ON gi.iteminstance = gc.id
             AND gi.itemtype = 'category'
             AND gi.hidden = 0
-        JOIN {grade_grades} gg 
+        LEFT JOIN {grade_grades} gg
         ON gg.itemid = gi.id
             AND gg.userid = :userid
             AND gg.hidden = 0

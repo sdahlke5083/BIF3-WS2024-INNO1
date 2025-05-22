@@ -69,7 +69,6 @@ class block_compviz extends block_base
     {
         global $OUTPUT, $USER;
 
-
         try {
             $skills = $this->block_compviz_get_skills_data();
         } catch (Exception $e) {
@@ -166,7 +165,8 @@ class block_compviz extends block_base
 
         foreach ($skills as $skill) {
             $totalprogress += $skill->finalgrade;
-            $count++;
+            $count++;  
+         
         }
 
         if ($count == 0) {
