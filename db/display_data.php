@@ -250,3 +250,48 @@ function block_compviz_get_current_user_grade_items_by_category(int $leos_catego
     return $leos;
 
 }
+
+/**
+ * Get all color themes from the database
+ *
+ * @return array An array of color themes with their details or an empty array if none found
+ * @throws dml_exception
+ */
+function block_compviz_get_color_themes()
+{
+    global $DB;
+
+    // SQL to get all color themes
+    $sql = "SELECT id, name
+            FROM {block_compviz_colors}
+            ORDER BY id ASC";
+
+    // Execute the query
+    $color_themes = array_values($DB->get_records_sql($sql));
+
+    $result = [];
+    foreach($color_themes as $ct){
+        $result[$ct->id] = $ct->name;
+    }
+
+    // Return result array
+    return !empty($color_themes) ? (array) $result : [];
+}
+
+function block_compviz_get_colors($theme)
+{
+    global $DB;
+
+    $sql = "SELECT color1, color2, color3, color4, color5
+            FROM {block_compviz_colors}
+            WHERE id = :themename
+            LIMIT 1";
+    
+    $params = [
+        'themename' => $theme
+    ];
+
+    $colors = array_values($DB->get_records_sql($sql, $params));
+
+    return !empty($colors) ? (array) $colors[0] : [];
+}

@@ -49,6 +49,10 @@ $string['select_leo_help'] = 'Select a Grading Category for the skills overview 
 $string['usersettings'] = 'Settings';
 $string['show_completed'] = 'Show completed skills';
 $string['show_completed_help'] = 'Show or Hide completed skills in the skills overview block.';
+$string['theme'] = 'Color Theme';
+$string['theme_help'] = 'Select a color theme of your liking for the progress bars.s';
+$string['settingssaved'] = 'User settings saved.';
+$string['settingsnotsaved'] = 'User settings could not be saved.';
 
 // strings for the privacy provider
 $string['privacy:metadata:block_compviz_enabled'] = 'The user preference for enabling the skills overview block.';

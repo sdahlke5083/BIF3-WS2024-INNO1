@@ -28,5 +28,13 @@
  */
 function xmldb_block_compviz_uninstall() {
 
+    global $DB;
+    $dbman = $DB->get_manager();
+
+    // Drop the 'block_compviz_colors' table.
+    if ($dbman->table_exists('block_compviz_colors')) {
+        $dbman->drop_table(new xmldb_table('block_compviz_colors'));
+    }
+
     return true;
 }

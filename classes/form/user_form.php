@@ -29,6 +29,7 @@ namespace block_compviz\form;
 use core_form\dynamic_form;
 
 defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot . '/blocks/compviz/db/display_data.php');
 
 class user_form extends dynamic_form
 {
@@ -50,6 +51,12 @@ class user_form extends dynamic_form
         $mform->setDefault('show_completed', 1);
         $mform->addHelpButton('show_completed', 'show_completed', 'block_compviz');
 
+        // Add dropdown to select what Color theme to use
+        $options = block_compviz_get_color_themes();
+        $mform->addElement('select', 'theme', get_string('theme', 'block_compviz'), $options );
+        $mform->setType('theme', PARAM_INT);
+        $mform->setDefault('theme', 1);
+        $mform->addHelpButton('theme', 'theme', 'block_compviz');
         // Add a button to save the settings.
         //$this->add_action_buttons();
     }
@@ -71,6 +78,7 @@ class user_form extends dynamic_form
         $data = new \stdClass();
         $data->enabled = get_user_preferences('block_compviz_enabled', 1, $USER->id);
         $data->show_completed = get_user_preferences('block_compviz_show_completed', 1, $USER->id);
+        $data->theme = get_user_preferences('block_compviz_theme', 1, $USER->id);
         $this->set_data($data);
     }
 
@@ -81,6 +89,7 @@ class user_form extends dynamic_form
         if ($data) {
             set_user_preference('block_compviz_enabled', $data->enabled ?? 0, $USER->id);
             set_user_preference('block_compviz_show_completed', $data->show_completed ?? 0, $USER->id);
+            set_user_preference('block_compviz_theme', $data->theme ?? 1, $USER->id);
             return ['success' => true, 'message' => get_string('settingssaved', 'block_compviz')];
         } else {
             return ['success' => false, 'message' => get_string('settingsnotsaved', 'block_compviz')];

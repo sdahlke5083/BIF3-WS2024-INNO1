@@ -46,12 +46,14 @@ if ($form->is_cancelled()) {
 } else if ($data = $form->get_data()) {
     set_user_preference('block_compviz_enabled', $data->enabled);
     set_user_preference('block_compviz_show_completed', $data->show_completed);
+    set_user_preference('block_compviz_theme', $data->theme);
     redirect($returnurl, '', 0, \core\output\notification::NOTIFY_SUCCESS);
 } else{
     // If the form is not submitted, we need to set the default values.
     $form->set_data([
         'enabled' => get_user_preferences('block_compviz_enabled', 1),
         'show_completed' => get_user_preferences('block_compviz_show_completed', 1),
+        'theme' => get_user_preferences('block_compviz-theme', 1)
     ]);
     $form->display();
 }

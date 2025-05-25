@@ -38,8 +38,6 @@ class block_compviz extends block_base
     //Erstellt Inhalt des Blocks
     public function get_content()
     {
-        global $USER;
-
         // Wenn Block global deaktiviert ist, dann nichts zurückgeben
         if (get_config('block_compviz', 'enabled') == 0) {
             $this->content = '';
@@ -89,7 +87,7 @@ class block_compviz extends block_base
 
             $progress = $this->block_compviz_get_progress($skill->finalgrade, $skill->grademax);
             $skill->progress = $progress;
-            $skill->color = $this->get_progress_color($progress);
+            $skill->color = $this->get_progress_color($progress, $USER->id);
             
             foreach ($skill->grade_items as $key => $subSkill) {
                 $progress = $this->block_compviz_get_progress($subSkill->finalgrade, $subSkill->grademax);
@@ -99,7 +97,7 @@ class block_compviz extends block_base
                 }
                 else{
                     $subSkill->progress = $progress;
-                    $subSkill->color = $this->get_progress_color($progress);
+                    $subSkill->color = $this->get_progress_color($progress, $USER->id);
                     //Begrenzung des Lo namen
                     $subSkill->name = trim(preg_replace('/^\p{So}+\s*/u', '', $subSkill->name));
                     if (strlen($subSkill->name) > $maxLength) {
@@ -122,7 +120,7 @@ class block_compviz extends block_base
             'title' => $this->title,
             'header' => get_string('skills_overview', 'block_compviz'),
             'totalProgress' => $totalprogress,
-            'totalColor' => $this->get_progress_color($totalprogress),
+            'totalColor' => $this->get_progress_color($totalprogress, $USER->id),
             'passingValue' => $passingvalue,
             'skills' => $skills
         ];
@@ -178,18 +176,22 @@ class block_compviz extends block_base
         return round($result, 2);
     }
 
-    private function get_progress_color($progress)
+    private function get_progress_color($progress, $userid)
     {
+        $settings_value = get_user_preferences('block_compviz_theme', 1, $userid);
+        
+        $colors = block_compviz_get_colors($settings_value);
+
         if ($progress < 20) {
-            return '#D8F3DC';
+            return "#".$colors['color5'];
         } elseif ($progress < 40) {
-            return '#b7e4c7';
+            return "#".$colors['color4'];
         } elseif ($progress < 60) {
-            return '#74c69d';
+            return "#".$colors['color3'];
         } elseif ($progress < 80) {
-            return '#52b788';
+            return "#".$colors['color2'];
         } else {
-            return '#40916C';
+            return "#".$colors['color1'];
         }
     }
 
