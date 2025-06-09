@@ -98,7 +98,7 @@ class user_form extends dynamic_form
         $mform->setDefault('custom_color', '#2196f3');
 
         // Add a button to save the settings.
-        //$this->add_action_buttons();
+        /* $this->add_action_buttons(); */
     }
 
     protected function get_context_for_dynamic_submission(): \context
