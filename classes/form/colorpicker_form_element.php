@@ -58,7 +58,7 @@ class colorpicker_form_element extends MoodleQuickForm_text
      * @param string $visiblename
      * @param string $description
      */
-    public function __construct($name, $visiblename, $description) {
+    public function __construct($name = null, $visiblename = null, $description = null) {
         if ($name == null) {
             // This is broken quickforms messing with the constructors.
             return;

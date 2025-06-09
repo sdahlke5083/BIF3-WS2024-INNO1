@@ -31,7 +31,7 @@ use MoodleQuickForm;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
-require_once $CFG->dirroot . '/blocks/compviz/db/display_data.php';
+require_once "{$CFG->dirroot}/blocks/compviz/db/display_data.php";
 
 
 class user_form extends dynamic_form
@@ -39,6 +39,7 @@ class user_form extends dynamic_form
 
     public function definition()
     {
+        global $CFG;
         $mform = $this->_form;
 
         // Add a header.
@@ -81,22 +82,20 @@ class user_form extends dynamic_form
             $mform->hideIf("custom_color_$i", 'color_mode', 'neq', 'custom');
         }
 
-        /*
         // Add a color picker for custom color selection (hex code).
         // register the custom color picker element type.
         MoodleQuickForm::registerElementType(
             // This is the element name used in the `addElement()` function.
             'configcolourpicker',
             // The path to the class file.
-            $CFG->dirroot . '/blocks/compviz/classes/form/colorpicker_form_element.php',
+            "{$CFG->dirroot}/blocks/compviz/classes/form/colorpicker_form_element.php",
             // The class name that implements the element.
             'colorpicker_form_element'
         );
         // Use a text field and add a CSS class for JS colorpicker enhancement.
-        $mform->addElement('configcolourpicker', 'custom_color', get_string('custom_color', 'block_compviz'), ['class' => 'block_compviz_colorpicker']);
+        $mform->addElement('configcolourpicker', 'custom_color', get_string('custom_color', 'block_compviz'));
         $mform->setType('custom_color', PARAM_RAW_TRIMMED);
         $mform->setDefault('custom_color', '#2196f3');
-        */
 
         // Add a button to save the settings.
         //$this->add_action_buttons();
