@@ -60,19 +60,18 @@ $string['privacy:metadata:block_compviz_show_completed'] = 'The user preference 
 $string['privacy:metadata:block_compviz'] = 'The Competence Visualization block stores user preferences for enabling the block and showing completed skills.';
 
 // strings for the colorpicker
-/*
-usetheme
-usecolorpicker
-colormode
-colormode_help
-custom_color_1
-custom_color_1_help
-custom_color_2
-custom_color_2_help
-custom_color_3
-custom_color_3_help
-custom_color_4
-custom_color_4_help
-custom_color_5
-custom_color_5_help
- */
+$string['pluginname']        = 'Competence Visualization';
+$string['enabled']           = 'Enable';
+$string['show_completed']    = 'Show completed skills';
+$string['colormode']         = 'Color mode';
+$string['usetheme']          = 'Use theme colors';
+$string['usecolorpicker']    = 'Use custom colors';
+$string['theme']             = 'Color theme';
+$string['custom_color_1']    = 'Color 1';
+$string['custom_color_2']    = 'Color 2';
+$string['custom_color_3']    = 'Color 3';
+$string['custom_color_4']    = 'Color 4';
+$string['custom_color_5']    = 'Color 5';
+$string['custom_color']      = 'Primary color';
+$string['settingssaved']     = 'Settings saved';
+$string['settingsnotsaved']  = 'Settings could not be saved';
