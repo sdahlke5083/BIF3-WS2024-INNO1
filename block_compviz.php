@@ -178,20 +178,36 @@ class block_compviz extends block_base
 
     private function get_progress_color($progress, $userid)
     {
-        $settings_value = get_user_preferences('block_compviz_theme', 1, $userid);
-        
-        $colors = block_compviz_get_colors($settings_value);
+        $mode = get_user_preferences('block_compviz_color_mode', 'theme', $userid);
+        if($mode == 'custom') {
+            $colors = [
+                'color1' => get_user_preferences('block_compviz_custom_color_1', '#ff0000', $userid),
+                'color2' => get_user_preferences('block_compviz_custom_color_2', '#00ff00', $userid),
+                'color3' => get_user_preferences('block_compviz_custom_color_3', '#0000ff', $userid),
+                'color4' => get_user_preferences('block_compviz_custom_color_4', '#ffff00', $userid),
+                'color5' => get_user_preferences('block_compviz_custom_color_5', '#ff00ff', $userid)
+            ];
+        } else {
+            $settings_value = get_user_preferences('block_compviz_theme', 1, $userid);
+            $colors = block_compviz_get_colors($settings_value);
+            // Ensure each color value starts with a '#'
+            foreach ($colors as $key => $color) {
+                if (strpos($color, '#') !== 0) {
+                    $colors[$key] = "#{$color}";
+                }
+            }
+        }
 
         if ($progress < 20) {
-            return "#".$colors['color5'];
+            return $colors['color5'];
         } elseif ($progress < 40) {
-            return "#".$colors['color4'];
+            return $colors['color4'];
         } elseif ($progress < 60) {
-            return "#".$colors['color3'];
+            return $colors['color3'];
         } elseif ($progress < 80) {
-            return "#".$colors['color2'];
+            return $colors['color2'];
         } else {
-            return "#".$colors['color1'];
+            return $colors['color1'];
         }
     }
 

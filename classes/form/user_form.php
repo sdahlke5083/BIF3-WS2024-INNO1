@@ -27,9 +27,12 @@
 
 namespace block_compviz\form;
 use core_form\dynamic_form;
+use MoodleQuickForm;
 
 defined('MOODLE_INTERNAL') || die();
-require_once($CFG->dirroot . '/blocks/compviz/db/display_data.php');
+global $CFG;
+require_once $CFG->dirroot . '/blocks/compviz/db/display_data.php';
+
 
 class user_form extends dynamic_form
 {
@@ -51,12 +54,50 @@ class user_form extends dynamic_form
         $mform->setDefault('show_completed', 1);
         $mform->addHelpButton('show_completed', 'show_completed', 'block_compviz');
 
+
+        // Add a radio group to choose between theme or custom color.
+        $radioarray = [];
+        $radioarray[] = $mform->createElement('radio', 'color_mode', '', get_string('usetheme', 'block_compviz'), 'theme');
+        $radioarray[] = $mform->createElement('radio', 'color_mode', '', get_string('usecolorpicker', 'block_compviz'), 'custom');
+        $mform->addGroup($radioarray, 'color_mode_group', get_string('colormode', 'block_compviz'), [' '], false);
+        $mform->setDefault('color_mode', 'theme');
+        $mform->addHelpButton('color_mode_group', 'colormode', 'block_compviz');
+
         // Add dropdown to select what Color theme to use
         $options = block_compviz_get_color_themes();
         $mform->addElement('select', 'theme', get_string('theme', 'block_compviz'), $options );
         $mform->setType('theme', PARAM_INT);
         $mform->setDefault('theme', 1);
         $mform->addHelpButton('theme', 'theme', 'block_compviz');
+        $mform->hideIf('theme', 'color_mode', 'neq', 'theme');
+        
+        // add 5 custom color options as text fields for custom color selection and group them.
+        for ($i = 1; $i <= 5; $i++) {
+            $mform->addElement('text', "custom_color_$i", get_string("custom_color_$i", 'block_compviz'));
+            $mform->setType("custom_color_$i", PARAM_RAW_TRIMMED);
+            $colorindex = $i - 1;
+            $mform->setDefault("custom_color_$i", "#{$colorindex}0ff{$colorindex}0");
+            $mform->addHelpButton("custom_color_$i", "custom_color_$i", 'block_compviz');
+            $mform->hideIf("custom_color_$i", 'color_mode', 'neq', 'custom');
+        }
+
+        /*
+        // Add a color picker for custom color selection (hex code).
+        // register the custom color picker element type.
+        MoodleQuickForm::registerElementType(
+            // This is the element name used in the `addElement()` function.
+            'configcolourpicker',
+            // The path to the class file.
+            $CFG->dirroot . '/blocks/compviz/classes/form/colorpicker_form_element.php',
+            // The class name that implements the element.
+            'colorpicker_form_element'
+        );
+        // Use a text field and add a CSS class for JS colorpicker enhancement.
+        $mform->addElement('configcolourpicker', 'custom_color', get_string('custom_color', 'block_compviz'), ['class' => 'block_compviz_colorpicker']);
+        $mform->setType('custom_color', PARAM_RAW_TRIMMED);
+        $mform->setDefault('custom_color', '#2196f3');
+        */
+
         // Add a button to save the settings.
         //$this->add_action_buttons();
     }
@@ -79,6 +120,12 @@ class user_form extends dynamic_form
         $data->enabled = get_user_preferences('block_compviz_enabled', 1, $USER->id);
         $data->show_completed = get_user_preferences('block_compviz_show_completed', 1, $USER->id);
         $data->theme = get_user_preferences('block_compviz_theme', 1, $USER->id);
+        $data->color_mode = get_user_preferences('block_compviz_color_mode', 'theme', $USER->id);
+        $data->custom_color_1 = get_user_preferences('block_compviz_custom_color_1', '#ff0000', $USER->id);
+        $data->custom_color_2 = get_user_preferences('block_compviz_custom_color_2', '#00ff00', $USER->id);
+        $data->custom_color_3 = get_user_preferences('block_compviz_custom_color_3', '#0000ff', $USER->id);
+        $data->custom_color_4 = get_user_preferences('block_compviz_custom_color_4', '#ffff00', $USER->id);
+        $data->custom_color_5 = get_user_preferences('block_compviz_custom_color_5', '#ff00ff', $USER->id);
         $this->set_data($data);
     }
 
@@ -90,6 +137,13 @@ class user_form extends dynamic_form
             set_user_preference('block_compviz_enabled', $data->enabled ?? 0, $USER->id);
             set_user_preference('block_compviz_show_completed', $data->show_completed ?? 0, $USER->id);
             set_user_preference('block_compviz_theme', $data->theme ?? 1, $USER->id);
+            set_user_preference('block_compviz_color_mode', $data->color_mode ?? 'theme', $USER->id);
+            // save custom colors
+            set_user_preference('block_compviz_custom_color_1', $data->custom_color_1 ?? '#ff0000', $USER->id);
+            set_user_preference('block_compviz_custom_color_2', $data->custom_color_2 ?? '#00ff00', $USER->id);
+            set_user_preference('block_compviz_custom_color_3', $data->custom_color_3 ?? '#0000ff', $USER->id);
+            set_user_preference('block_compviz_custom_color_4', $data->custom_color_4 ?? '#ffff00', $USER->id);
+            set_user_preference('block_compviz_custom_color_5', $data->custom_color_5 ?? '#ff00ff', $USER->id);
             return ['success' => true, 'message' => get_string('settingssaved', 'block_compviz')];
         } else {
             return ['success' => false, 'message' => get_string('settingsnotsaved', 'block_compviz')];

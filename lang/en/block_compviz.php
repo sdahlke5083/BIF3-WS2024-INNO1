@@ -58,3 +58,21 @@ $string['settingsnotsaved'] = 'User settings could not be saved.';
 $string['privacy:metadata:block_compviz_enabled'] = 'The user preference for enabling the skills overview block.';
 $string['privacy:metadata:block_compviz_show_completed'] = 'The user preference for showing completed skills in the skills overview block.';
 $string['privacy:metadata:block_compviz'] = 'The Competence Visualization block stores user preferences for enabling the block and showing completed skills.';
+
+// strings for the colorpicker
+/*
+usetheme
+usecolorpicker
+colormode
+colormode_help
+custom_color_1
+custom_color_1_help
+custom_color_2
+custom_color_2_help
+custom_color_3
+custom_color_3_help
+custom_color_4
+custom_color_4_help
+custom_color_5
+custom_color_5_help
+ */
