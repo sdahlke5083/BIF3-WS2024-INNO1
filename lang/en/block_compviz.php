@@ -85,3 +85,11 @@ $string['custom_color_3_help']    = 'Passed';
 $string['custom_color_4_help']    = 'Almost Passed';
 $string['custom_color_5_help']    = 'Failed';
 $string['custom_color_help']      = 'Primary hex color used when custom colors are enabled.';
+
+
+
+// Completion labels for quiz prefix.
+$string['completion_notcompleted'] = 'Not completed';
+$string['completion_completed']    = 'Completed';
+$string['completion_passed']       = 'Passed';
+$string['completion_failed']       = 'Failed';
