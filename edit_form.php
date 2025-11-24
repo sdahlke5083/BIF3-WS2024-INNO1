@@ -34,12 +34,6 @@ class block_compviz_edit_form extends block_edit_form {
         // Section header title.
         $mform->addElement('header', 'configheader', get_string('blocksettings', 'block'));
 
-        // demo setting "enable"
-        //$mform->addElement('selectyesno', 'config_enable', get_string('enabled', 'block_compviz'));
-        //$mform->setDefault('config_enable', true);
-        //$mform->setType('config_enable', PARAM_BOOL);
-
-
         $options = block_compviz_get_current_course_learning_outcomes_category();
         $default = block_compviz_get_default_leo_category();
 
@@ -47,9 +41,6 @@ class block_compviz_edit_form extends block_edit_form {
         $mform->setType('config_select_leo', PARAM_INT);
         $mform->addHelpButton('config_select_leo', 'select_leo', 'block_compviz');
         $mform->setDefault('config_select_leo', $default);
-        
-    
-
 
         // Please keep in mind that all elements defined here must start with 'config_'.
 

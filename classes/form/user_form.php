@@ -45,11 +45,6 @@ class user_form extends dynamic_form
         // Add a header.
         $mform->addElement('header', 'user_settings', get_string('pluginname', 'block_compviz'));
 
-        // Add a checkbox for enabling the skills overview block.
-        $mform->addElement('checkbox', 'enabled', get_string('enabled', 'block_compviz'));
-        $mform->setDefault('enabled', 1);
-        $mform->addHelpButton('enabled', 'enabled', 'block_compviz');
-
         // Add a checkbox for showing completed skills.
         $mform->addElement('checkbox', 'show_completed', get_string('show_completed', 'block_compviz'));
         $mform->setDefault('show_completed', 1);
@@ -92,11 +87,7 @@ class user_form extends dynamic_form
             // The class name that implements the element.
             'colorpicker_form_element'
         );
-        // Use a text field and add a CSS class for JS colorpicker enhancement.
-        $mform->addElement('configcolourpicker', 'custom_color', get_string('custom_color', 'block_compviz'));
-        $mform->setType('custom_color', PARAM_RAW_TRIMMED);
-        $mform->setDefault('custom_color', '#2196f3');
-
+        
         // Add a button to save the settings.
         /* $this->add_action_buttons(); */
     }
@@ -116,7 +107,6 @@ class user_form extends dynamic_form
     {
         global $USER;
         $data = new \stdClass();
-        $data->enabled = get_user_preferences('block_compviz_enabled', 1, $USER->id);
         $data->show_completed = get_user_preferences('block_compviz_show_completed', 1, $USER->id);
         $data->theme = get_user_preferences('block_compviz_theme', 1, $USER->id);
         $data->color_mode = get_user_preferences('block_compviz_color_mode', 'theme', $USER->id);
@@ -133,7 +123,6 @@ class user_form extends dynamic_form
         global $USER;
         $data = (object)$this->get_data();
         if ($data) {
-            set_user_preference('block_compviz_enabled', $data->enabled ?? 0, $USER->id);
             set_user_preference('block_compviz_show_completed', $data->show_completed ?? 0, $USER->id);
             set_user_preference('block_compviz_theme', $data->theme ?? 1, $USER->id);
             set_user_preference('block_compviz_color_mode', $data->color_mode ?? 'theme', $USER->id);
