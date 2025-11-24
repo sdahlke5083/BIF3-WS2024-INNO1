@@ -295,3 +295,45 @@ function block_compviz_get_colors($theme)
 
     return !empty($colors) ? (array) $colors[0] : [];
 }
+
+
+/**
+ * Returns completion states for the given course module IDs (cmids) and user.
+ * Key = cmid (int), Value = completionstate (int: 0..3)
+ *
+ * Table: course_modules_completion
+ *  - completionstate:
+ *      0 = incomplete
+ *      1 = complete
+ *      2 = complete-pass
+ *      3 = complete-fail
+ *
+ * @param array $cmids
+ * @param int $userid
+ * @return array<int,int>
+ */
+function block_compviz_get_cm_completion_states_for_user(array $cmids, int $userid): array {
+    global $DB;
+
+    // Säubere die Liste der cmids.
+    $cmids = array_values(array_filter(array_map('intval', $cmids)));
+    if (empty($cmids)) {
+        return [];
+    }
+
+    list($insql, $params) = $DB->get_in_or_equal($cmids, SQL_PARAMS_NAMED, 'cmid');
+    $params['userid'] = $userid;
+
+    $sql = "SELECT cmc.coursemoduleid AS cmid, cmc.completionstate AS state
+              FROM {course_modules_completion} cmc
+             WHERE cmc.userid = :userid
+               AND cmc.coursemoduleid $insql";
+
+    $records = $DB->get_records_sql($sql, $params);
+
+    $map = [];
+    foreach ($records as $rec) {
+        $map[(int)$rec->cmid] = (int)$rec->state;
+    }
+    return $map;
+}

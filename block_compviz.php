@@ -25,6 +25,9 @@
 // import display_data.php
 require_once($CFG->dirroot . '/blocks/compviz/db/display_data.php');
 
+// Add completion constants (COMPLETION_*).
+require_once($CFG->libdir . '/completionlib.php');
+
 class block_compviz extends block_base
 {
 
@@ -77,6 +80,25 @@ class block_compviz extends block_base
         $options = new stdClass();
         $options->showCompleted = $this->get_user_settings_as_bool('show_completed', $USER->id);
 
+        global $CFG; // für completionlib path
+        require_once($CFG->libdir . '/completionlib.php'); // definiert COMPLETION_* Konstanten
+
+        $quizcmids = [];
+        foreach ($skills as $s) {
+            if (empty($s->grade_items)) {
+                continue;
+            }
+            foreach ($s->grade_items as $gi) {
+                if (!empty($gi->cmid) && !empty($gi->itemmodule) && $gi->itemmodule === 'quiz') {
+                    $quizcmids[] = (int)$gi->cmid;
+                }
+            }
+        }
+        $quizcmids = array_values(array_unique($quizcmids));
+
+        // cmid -> completionstate aus {course_modules_completion} via unser DB-Helper.
+        $completionmap = block_compviz_get_cm_completion_states_for_user($quizcmids, $USER->id);
+
         foreach ($skills as $skill) {
             //Begrenzung der LOs namen
             $maxLength = 30; 
@@ -103,6 +125,28 @@ class block_compviz extends block_base
                     if (strlen($subSkill->name) > $maxLength) {
                         $subSkill->name = substr($subSkill->name, 0, $maxLength) . '...';
                     }
+                }
+                if (!empty($subSkill->cmid) && !empty($subSkill->itemmodule) && $subSkill->itemmodule === 'quiz') {
+                    $state = $completionmap[$subSkill->cmid] ?? COMPLETION_INCOMPLETE;
+
+                    // State -> Label (nutzt die Sprachstrings aus lang/*/block_compviz.php)
+                    switch ((int)$state) {
+                        case COMPLETION_COMPLETE_PASS:
+                            $label = get_string('completion_passed', 'block_compviz'); break;
+                        case COMPLETION_COMPLETE_FAIL:
+                            $label = get_string('completion_failed', 'block_compviz'); break;
+                        case COMPLETION_COMPLETE:
+                            $label = get_string('completion_completed', 'block_compviz'); break;
+                        case COMPLETION_INCOMPLETE:
+                        default:
+                            $label = get_string('completion_notcompleted', 'block_compviz'); break;
+                    }
+
+                    // Farbe anhand des Completion-States überschreiben.
+                    $subSkill->color = $this->get_progress_color($progress, $USER->id, $state);
+
+                    // Prefix vor den vorhandenen Namen setzen
+                    //$subSkill->name = '[' . $label . '] ' . $subSkill->name;
                 }
                 if (!empty($subSkill->cmid) && !empty($subSkill->itemmodule)) {
                     $subSkill->url = new moodle_url(
@@ -176,10 +220,10 @@ class block_compviz extends block_base
         return round($result, 2);
     }
 
-    private function get_progress_color($progress, $userid)
+    private function get_progress_color($progress, $userid, $completionstate = null)
     {
         $mode = get_user_preferences('block_compviz_color_mode', 'theme', $userid);
-        if($mode == 'custom') {
+        if ($mode == 'custom') {
             $colors = [
                 'color1' => get_user_preferences('block_compviz_custom_color_1', '#ff0000', $userid),
                 'color2' => get_user_preferences('block_compviz_custom_color_2', '#00ff00', $userid),
@@ -198,6 +242,24 @@ class block_compviz extends block_base
             }
         }
 
+        // Wenn ein Completion-State übergeben wurde, ggf. Spezialfarben verwenden.
+        if ($completionstate !== null) {
+            switch ((int)$completionstate) {
+                case COMPLETION_COMPLETE:
+                case COMPLETION_COMPLETE_PASS:
+                    // Grün für "abgeschlossen / bestanden".
+                    return '#28a745';
+                case COMPLETION_COMPLETE_FAIL:
+                    // Rot für "nicht bestanden".
+                    return '#dc3545';
+                case COMPLETION_INCOMPLETE:
+                default:
+                    // Für "incomplete" oder unbekannte States weiter unten die Standardlogik verwenden.
+                    break;
+            }
+        }
+
+        // Standard Farblogik abhängig vom Fortschritt.
         if ($progress < 20) {
             return $colors['color5'];
         } elseif ($progress < 40) {
