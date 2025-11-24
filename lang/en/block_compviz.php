@@ -50,7 +50,7 @@ $string['usersettings'] = 'Settings';
 $string['show_completed'] = 'Show completed skills';
 $string['show_completed_help'] = 'Show or Hide completed skills in the skills overview block.';
 $string['theme'] = 'Color Theme';
-$string['theme_help'] = 'Select a color theme of your liking for the progress bars.s';
+$string['theme_help'] = 'Select a color theme of your liking for the progress bars.';
 $string['settingssaved'] = 'User settings saved.';
 $string['settingsnotsaved'] = 'User settings could not be saved.';
 
@@ -60,25 +60,18 @@ $string['privacy:metadata:block_compviz_show_completed'] = 'The user preference 
 $string['privacy:metadata:block_compviz'] = 'The Competence Visualization block stores user preferences for enabling the block and showing completed skills.';
 
 // strings for the colorpicker
-$string['pluginname']        = 'Competence Visualization';
-$string['enabled']           = 'Enable';
-$string['show_completed']    = 'Show completed skills';
 $string['colormode']         = 'Color mode';
 $string['usetheme']          = 'Use theme colors';
 $string['usecolorpicker']    = 'Use custom colors';
-$string['theme']             = 'Color theme';
 $string['custom_color_1']    = 'Color 1';
 $string['custom_color_2']    = 'Color 2';
 $string['custom_color_3']    = 'Color 3';
 $string['custom_color_4']    = 'Color 4';
 $string['custom_color_5']    = 'Color 5';
 $string['custom_color']      = 'Primary color';
-$string['settingssaved']     = 'Settings saved';
-$string['settingsnotsaved']  = 'Settings could not be saved';
-$string['colormode_help']         = 'Choose between using your site’s theme colors or custom colors.';
+$string['colormode_help']         = 'Choose between using your sites theme colors or custom colors.';
 $string['usetheme_help']          = 'When selected, the block will use the current Moodle theme colors.';
 $string['usecolorpicker_help']    = 'When selected, you can enter your own custom hex-colors below.';
-$string['theme_help']             = 'Select one of the predefined color palettes for the visualization.';
 $string['custom_color_1_help']    = 'Perfect';
 $string['custom_color_2_help']    = 'Almost Perfect';
 $string['custom_color_3_help']    = 'Passed';
