@@ -9,6 +9,12 @@
  *
  * @copyright 2025 
  */
+
+/* Verhindert die untere Rahmenlinie bei den Studierenden-Einstellungen */
+[id^="id_user_settings_"] {
+    border-bottom: 0 !important;
+}
+
 .skill-name,
 .sub-skill-name {
     font-size: 12px;
