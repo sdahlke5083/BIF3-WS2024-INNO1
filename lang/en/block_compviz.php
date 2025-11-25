@@ -39,6 +39,8 @@ $string['enabled_desc'] = 'Enable the skills overview block on the course page.'
 $string['enabled_help'] = 'Enable the skills overview block on the course page.';
 $string['admin_settings_desc'] = 'Info:';
 $string['admin_settings_desc_desc'] = 'PoC for the global settings for the Competence Visualization block. Has currently no effect on the block itself.';
+$string['no_leo'] = 'No Learning Outcome Categories found.';
+$string['no_subskills'] = 'No visible sub-skills found for this Learning Outcome Category.';
 
 // strings for the settings form
 $string['select_leo'] = 'Select Learning Outcome Category';

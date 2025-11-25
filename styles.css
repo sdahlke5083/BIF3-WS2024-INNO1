@@ -10,18 +10,29 @@
  * @copyright 2025 
  */
 
-/* Verhindert die untere Rahmenlinie bei den Studierenden-Einstellungen */
+/* Prevents the bottom frame line in the student settings */
 [id^="id_user_settings_"] {
     border-bottom: 0 !important;
 }
 
+/* Tooltip adjustments to display full tooltip content without line breaks */
+.bs-tooltip-left>.tooltip-inner {
+    max-width: fit-content !important;
+}
+
+/* make block settings icon for students more visible */
+.editing_usersettings {
+    font-size: x-large;
+    color: black;
+}
+
 .skill-name,
 .sub-skill-name {
-    font-size: 12px;
+    /*font-size: 15px;*/
     word-break: break-word;
     text-align: center;
     padding-left: 5px;
-    font-weight: bold;
+    font-weight: 600;
 }
 .skill-name {
     padding-right: 35px; /* <<< Platz für den Pfeil rechts */

@@ -46,7 +46,8 @@
             <div class="skill-wrapper w-100">
                 <div class="d-flex align-items-center bg-light border rounded position-relative mb-2" style="height: 35px;">
                     <div class="position-absolute top-0 start-0 h-100 rounded" style="width: {{progress}}%; background-color: {{color}};"></div>
-                    <div class="position-relative w-100 d-flex align-items-center justify-content-center auto-color" style="--bg: {{color}};">
+                    <div class="position-relative w-100 d-flex align-items-center justify-content-center auto-color" style="--bg: {{color}};"
+                    data-toggle="tooltip" data-placement="left" title="{{fullName}}">
                         <div class="skill-name">{{name}}</div>
                         <span class="skill-toggle position-absolute end-0 me-2">▼</span>
                     </div>
@@ -61,7 +62,7 @@
                 <div class="ms-auto" style="width: 90%;">
                     <div class="d-flex align-items-center bg-light border rounded position-relative mb-2" style="height: 35px;">
                         <div class="position-absolute top-0 start-0 h-100 rounded" style="width: {{progress}}%; background-color: {{color}};"></div>
-                        <div class="position-relative w-100 d-flex align-items-center justify-content-center">
+                        <div class="position-relative w-100 d-flex align-items-center justify-content-center" data-toggle="tooltip" data-placement="left" title="{{fullName}}">
                             {{#url}}
                                 <a href="{{url}}" class="sub-skill-name auto-color text-decoration-none" style="--bg: {{color}};">{{name}}</a>
                             {{/url}}
@@ -73,6 +74,9 @@
                 </div>
             </div>
         </div>
+        {{/grade_items}}
+        {{^grade_items}}
+        <div class="text-center text-muted mb-2">{{no_subskills}}</div>
         {{/grade_items}}
 
     </details>

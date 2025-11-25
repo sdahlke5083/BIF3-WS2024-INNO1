@@ -73,7 +73,7 @@ class block_compviz extends block_base
         try {
             $skills = $this->block_compviz_get_skills_data();
         } catch (Exception $e) {
-            return "No data available";
+            return get_string('no_leo', 'block_compviz');
         }
         $totalprogress = $this->block_compviz_get_total_progress($skills);
         $passingvalue = 75;
@@ -101,8 +101,9 @@ class block_compviz extends block_base
 
         foreach ($skills as $skill) {
             //Begrenzung der LOs namen
-            $maxLength = 30; 
+            $maxLength = 25; 
             $skill->name = trim(preg_replace('/^\p{So}+\s*/u', '', $skill->name));
+            $skill->fullName = $skill->name;
             if (strlen($skill->name) > $maxLength) {
                 $skill->name = substr($skill->name, 0, $maxLength) . '...';
             }
@@ -122,8 +123,9 @@ class block_compviz extends block_base
                     $subSkill->color = $this->get_progress_color($progress, $USER->id);
                     //Begrenzung des Lo namen
                     $subSkill->name = trim(preg_replace('/^\p{So}+\s*/u', '', $subSkill->name));
-                    if (strlen($subSkill->name) > $maxLength) {
-                        $subSkill->name = substr($subSkill->name, 0, $maxLength) . '...';
+                    $subSkill->fullName = $subSkill->name;
+                    if (strlen($subSkill->name) > floor($maxLength * 0.9)) {
+                        $subSkill->name = substr($subSkill->name, 0, floor($maxLength * 0.9)) . '...';
                     }
                 }
                 if (!empty($subSkill->cmid) && !empty($subSkill->itemmodule) && $subSkill->itemmodule === 'quiz') {
@@ -166,7 +168,8 @@ class block_compviz extends block_base
             'totalProgress' => $totalprogress,
             'totalColor' => $this->get_progress_color($totalprogress, $USER->id),
             'passingValue' => $passingvalue,
-            'skills' => $skills
+            'skills' => $skills,
+            'no_subskills' => get_string('no_subskills', 'block_compviz'),
         ];
 
         return $OUTPUT->render_from_template('block_compviz/skills_overview', $data);
@@ -286,9 +289,10 @@ class block_compviz extends block_base
     // Adds a settings link to the block's breadcrumb navigation
     public function get_content_for_output($output)
     {
+        global $PAGE;
         $bc = parent::get_content_for_output($output);
 
-        if ($bc && isloggedin() && !isguestuser()) {
+        if ($bc && isloggedin() && !isguestuser() && !$PAGE->user_is_editing()) {
             
             $link = new action_menu_link_primary(
                 new moodle_url('#', null),
