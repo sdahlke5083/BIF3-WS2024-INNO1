@@ -9,56 +9,38 @@
  *
  * @copyright 2025 
  */
-
-.progress-horizontal {
-    display: flex;
-    height: 100%;
-    overflow: hidden;
-    line-height: 0;
-    font-size: .703125rem;
-    background-color: #e9ecef;
-    border-radius: .5rem;
-    flex-direction: column-reverse;
-}
-
-.progress-bar-horizontal {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    overflow: hidden;
-    color: #fff;
+.skill-name,
+.sub-skill-name {
+    font-size: 12px;
+    word-break: break-word;
     text-align: center;
-    white-space: nowrap;
-    background-color: #0f6cbf;
-    transition: width 0.6s ease;
+    padding-left: 5px;
+    font-weight: bold;
+}
+.skill-name {
+    padding-right: 35px; /* <<< Platz für den Pfeil rechts */
 }
 
-.passing-value {
-    top: 0;
-    height: 100%;
-    width: 2px;
-    border-radius: 2px;
-    background-color: red;
-    z-index: 1;
+.auto-color {
+    /* credits to https://specy.app/blog/posts/automatic-text-color-from-background */
+    --dark-luminance: 8;
+    --light-luminance: 95;
+    /*background: var(--bg);*/
+    color: lch(from var(--bg) clamp(var(--dark-luminance),round((100 - l), 100),var(--light-luminance)) 0 0);
 }
 
-.passing-value-horizontal {
-    height: 2px;
-    width: 100%;
-    background-color: red;
+/* Pfeil zum Ein- und Ausklappen der Unterfähigkeiten */
+details:open span.skill-toggle {
+    transform: rotate(180deg);
 }
 
-.progress>.progress-text {
-    position: absolute;
-    left: 0px;
-    padding: 8px 30px 8px 10px;
-    color: rgb(255, 255, 255);
+details:not(:open) span.skill-toggle {
+    transform: rotate(0deg);
 }
 
-.progress>.progress-value {
-    position: absolute;
-    right: 0px;
-    padding: 8px 10px 8px;
+.skill-toggle {
+    font-size: 12px;
+    cursor: pointer;
+    right: 10px;
+    color: black;
 }
-
-

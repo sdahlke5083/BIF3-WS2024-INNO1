@@ -103,7 +103,7 @@ class block_compviz extends block_base
             //Begrenzung der LOs namen
             $maxLength = 30; 
             $skill->name = trim(preg_replace('/^\p{So}+\s*/u', '', $skill->name));
-                if (strlen($skill->name) > $maxLength) {
+            if (strlen($skill->name) > $maxLength) {
                 $skill->name = substr($skill->name, 0, $maxLength) . '...';
             }
 
