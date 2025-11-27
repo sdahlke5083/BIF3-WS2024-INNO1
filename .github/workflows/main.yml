@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      # Change this to your Moodle plugin frankenstyle name
+      # Moodle plugin frankenstyle name
       PLUGIN_DIR: block_compviz
 
       # Set to "false" to skip ALL linting steps
