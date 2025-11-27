@@ -1,0 +1,145 @@
+name: Build & release Moodle plugin on tag
+
+on:
+  push:
+    tags:
+      - "v*"        # adjust if needed
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required for creating releases
+
+    env:
+      # Moodle plugin frankenstyle name
+      PLUGIN_DIR: block_compviz
+
+      # Set to "false" to skip ALL linting steps
+      ENABLE_LINTING: "false"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        if: env.ENABLE_LINTING == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        if: env.ENABLE_LINTING == 'true'
+        run: |
+          if [ -f package.json ]; then
+            if [ -f package-lock.json ]; then
+              npm ci
+            else
+              npm install
+            fi
+          else
+            echo "No package.json found, skipping npm install."
+          fi
+
+      # -------------------------
+      # LINTING (conditionally run)
+      # -------------------------
+      - name: Install jq
+        if: env.ENABLE_LINTING == 'true'
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Verify Grunt is available
+        if: env.ENABLE_LINTING == 'true'
+        run: |
+          if [ ! -f package.json ]; then
+            echo "Error: package.json not found. Linting requires a package.json with grunt and its plugins."
+            exit 1
+          fi
+          if ! jq -e '.dependencies.grunt // .devDependencies.grunt' package.json > /dev/null 2>&1; then
+            echo "Error: grunt is not listed in package.json. Please add grunt to your devDependencies."
+            exit 1
+          fi
+          if ! npx grunt --help > /dev/null 2>&1; then
+            echo "Error: Grunt is not properly installed. Please ensure grunt and grunt-cli are in your dependencies or devDependencies."
+            exit 1
+          fi
+          echo "Grunt is available and ready for linting."
+
+      - name: Mustache lint
+        if: env.ENABLE_LINTING == 'true'
+        run: npx grunt mustache
+
+      - name: Grunt ESLint
+        if: env.ENABLE_LINTING == 'true'
+        run: npx grunt eslint
+
+      - name: Grunt AMD
+        if: env.ENABLE_LINTING == 'true'
+        run: npx grunt amd
+
+      - name: Grunt CSS
+        if: env.ENABLE_LINTING == 'true'
+        run: npx grunt css
+
+      # -------------------------
+      # PACKAGE
+      # -------------------------
+
+      - name: Build plugin archives
+        run: |
+          set -e
+
+          TAG_NAME="${GITHUB_REF_NAME}"
+          if [ -z "$TAG_NAME" ]; then
+            echo "Error: GITHUB_REF_NAME is not set"
+            exit 1
+          fi
+          ARCHIVE_BASENAME="${PLUGIN_DIR}-${TAG_NAME}"
+
+          mkdir -p dist
+          mkdir -p "build/${PLUGIN_DIR}"
+
+          # Copy everything except build-time junk
+          rsync -a ./ "build/${PLUGIN_DIR}/" \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude "node_modules" \
+            --exclude "build" \
+            --exclude "dist" \
+            --exclude ".gitignore" \
+            --exclude ".vscode" \
+            --exclude ".editorconfig" \
+            --exclude ".idea" \
+            --exclude "package.json" \
+            --exclude "package-lock.json" \
+            --exclude "Gruntfile.js"
+
+          cd build
+
+          # ZIP archive (Moodle-friendly)
+          zip -r "../dist/${ARCHIVE_BASENAME}.zip" "${PLUGIN_DIR}"
+
+          # TAR.GZ archive
+          tar -czf "../dist/${ARCHIVE_BASENAME}.tar.gz" "${PLUGIN_DIR}"
+
+          cd ..
+
+          # List build artifacts for verification
+          ls -R dist
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: moodle-plugin-${{ github.ref_name }}
+          path: dist/*
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          files: |
+            dist/*.zip
+            dist/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
