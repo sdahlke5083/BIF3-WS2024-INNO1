@@ -55,7 +55,7 @@ jobs:
             exit 1
           fi
           if ! npx grunt --help > /dev/null 2>&1; then
-            echo "Error: Grunt is not properly installed. Please ensure grunt and grunt-cli are in your dependencies."
+            echo "Error: Grunt is not properly installed. Please ensure grunt and grunt-cli are in your dependencies or devDependencies."
             exit 1
           fi
           echo "Grunt is available and ready for linting."
