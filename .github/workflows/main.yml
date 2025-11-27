@@ -1,6 +1,7 @@
 name: Build & release Moodle plugin on tag
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - "v*"        # adjust if needed
