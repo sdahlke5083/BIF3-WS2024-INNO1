@@ -43,25 +43,38 @@ jobs:
       # LINTING (conditionally run)
       # -------------------------
 
-      - name: Mustache lint
+      - name: Verify Grunt is available
         if: env.ENABLE_LINTING == 'true'
         run: |
-          npx grunt mustache
+          if [ ! -f package.json ]; then
+            echo "Error: package.json not found. Linting requires a package.json with grunt and its plugins."
+            exit 1
+          fi
+          if ! grep -q '"grunt"' package.json; then
+            echo "Error: grunt is not listed in package.json. Please add grunt to your devDependencies."
+            exit 1
+          fi
+          if ! npx grunt --help > /dev/null 2>&1; then
+            echo "Error: Grunt is not properly installed. Please ensure grunt and grunt-cli are in your dependencies."
+            exit 1
+          fi
+          echo "Grunt is available and ready for linting."
+
+      - name: Mustache lint
+        if: env.ENABLE_LINTING == 'true'
+        run: npx grunt mustache
 
       - name: Grunt ESLint
         if: env.ENABLE_LINTING == 'true'
-        run: |
-          npx grunt eslint
+        run: npx grunt eslint
 
       - name: Grunt AMD
         if: env.ENABLE_LINTING == 'true'
-        run: |
-          npx grunt amd
+        run: npx grunt amd
 
       - name: Grunt CSS
         if: env.ENABLE_LINTING == 'true'
-        run: |
-          npx grunt css
+        run: npx grunt css
 
       # -------------------------
       # PACKAGE
