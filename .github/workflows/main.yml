@@ -85,6 +85,10 @@ jobs:
           set -e
 
           TAG_NAME="${GITHUB_REF_NAME}"
+          if [ -z "$TAG_NAME" ]; then
+            echo "Error: GITHUB_REF_NAME is not set"
+            exit 1
+          fi
           ARCHIVE_BASENAME="${PLUGIN_DIR}-${TAG_NAME}"
 
           mkdir -p dist
