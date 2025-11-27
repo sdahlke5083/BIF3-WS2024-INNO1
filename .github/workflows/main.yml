@@ -99,6 +99,7 @@ jobs:
 
           cd ..
 
+          # List build artifacts for verification
           ls -R dist
 
       - name: Upload build artifacts
