@@ -100,7 +100,10 @@ jobs:
             --exclude ".gitignore" \
             --exclude ".vscode" \
             --exclude ".editorconfig" \
-            --exclude ".idea"
+            --exclude ".idea" \
+            --exclude "package.json" \
+            --exclude "package-lock.json" \
+            --exclude "Gruntfile.js"
 
           cd build
 
