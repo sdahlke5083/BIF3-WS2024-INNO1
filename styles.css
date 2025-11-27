@@ -26,38 +26,103 @@
     color: black;
 }
 
-.skill-name,
-.sub-skill-name {
-    /*font-size: 15px;*/
-    word-break: break-word;
-    text-align: center;
-    padding-left: 5px;
-    font-weight: 600;
-}
-.skill-name {
-    padding-right: 35px; /* <<< Platz für den Pfeil rechts */
-}
+/* Progress bar styles */
 
-.auto-color {
-    /* credits to https://specy.app/blog/posts/automatic-text-color-from-background */
-    --dark-luminance: 8;
+.pb {
+    /* sensible defaults (overridden by inline styles in templates) */
+    --pb-progress: 60%;
+    --pb-fill-color: #22c55e;
+
+    /* auto-color helpers */
+    --dark-luminance: 10;
     --light-luminance: 95;
-    /*background: var(--bg);*/
-    color: lch(from var(--bg) clamp(var(--dark-luminance),round((100 - l), 100),var(--light-luminance)) 0 0);
+
+    /* fallback for older browsers */
+    --auto-color: black;
+    --pb-text-color: var(--pb-fill-color);
+
+    /* calculate some colors for color magic */
+    /* credits to https://specy.app/blog/posts/automatic-text-color-from-background */
+    --pb-text-color: lch(from var(--pb-fill-color) clamp(0, l, 70) c h);
+    --auto-color: lch(from var(--pb-fill-color) clamp(var(--dark-luminance), round((100 - l), 100), var(--light-luminance)) 0 0);
 }
 
-/* Pfeil zum Ein- und Ausklappen der Unterfähigkeiten */
-details:open span.skill-toggle {
-    transform: rotate(180deg);
+.pb.pb-bar {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
+    width: 100%;
+    border-radius: 9px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    overflow: hidden;
+    color: var(--pb-text-color);
 }
 
-details:not(:open) span.skill-toggle {
-    transform: rotate(0deg);
+.pb.pb-bar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: var(--pb-progress);
+    background: var(--pb-fill-color);
 }
 
-.skill-toggle {
-    font-size: 12px;
-    cursor: pointer;
+.pb .pb-text {
+    position: relative;
+    width: 100%;
+    text-align: center;
+}
+
+.pb .pb-text a {
+    color: inherit;
+}
+
+.pb .skill-toggle {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.pb .skill-toggle::before {
+    content: "▼";
+    position: absolute;
     right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
     color: black;
+}
+
+/* turn arrow when open */
+
+details:open .skill-toggle::before,
+details:open .skill-toggle::after {
+    content: "▲";
+}
+
+/* text color magic */
+.pb .pb-text::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    mix-blend-mode: normal;
+    clip-path: inset(0 calc(100% - var(--pb-progress)) 0 0);
+    color: var(--auto-color);
+}
+
+.pb .skill-toggle::after {
+    content: "▼";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    background: linear-gradient(90deg, var(--auto-color, black) var(--pb-progress), transparent calc(var(--pb-progress)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
