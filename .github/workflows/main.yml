@@ -50,7 +50,7 @@ jobs:
             echo "Error: package.json not found. Linting requires a package.json with grunt and its plugins."
             exit 1
           fi
-          if ! grep -q '"grunt"' package.json; then
+          if ! jq -e '.dependencies.grunt // .devDependencies.grunt' package.json > /dev/null 2>&1; then
             echo "Error: grunt is not listed in package.json. Please add grunt to your devDependencies."
             exit 1
           fi
