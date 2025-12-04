@@ -79,7 +79,7 @@ jobs:
         if: env.ENABLE_LINTING == 'true'
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Verify Grunt availability
+      - name: Verify Grunt is available
         if: env.ENABLE_LINTING == 'true'
         run: |
           if [ ! -f package.json ]; then
