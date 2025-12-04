@@ -21,10 +21,11 @@
  * @copyright   2024 BIF-INNO-Group10
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+require_once($CFG->dirroot . '/blocks/compviz/db/display_data.php');
 class block_compviz_edit_form extends block_edit_form {
 
     /**
-     * Extends the configuration form for block_compviz.
+     * Extends the system(?) wide configuration form for block_compviz.
      *
      * @param MoodleQuickForm $mform The form being built.
      */
@@ -32,6 +33,14 @@ class block_compviz_edit_form extends block_edit_form {
 
         // Section header title.
         $mform->addElement('header', 'configheader', get_string('blocksettings', 'block'));
+
+        $options = block_compviz_get_current_course_learning_outcomes_category();
+        $default = block_compviz_get_default_leo_category();
+
+        $mform->addElement('select', 'config_select_leo', get_string('select_leo', 'block_compviz'), $options);
+        $mform->setType('config_select_leo', PARAM_INT);
+        $mform->addHelpButton('config_select_leo', 'select_leo', 'block_compviz');
+        $mform->setDefault('config_select_leo', $default);
 
         // Please keep in mind that all elements defined here must start with 'config_'.
 

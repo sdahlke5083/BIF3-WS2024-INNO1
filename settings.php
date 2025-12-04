@@ -26,10 +26,31 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $settings = new admin_settingpage('block_compviz_settings', new lang_string('pluginname', 'block_compviz'));
+    // New settings page for the block.
+    // {@link https://docs.moodle.org/dev/Admin_settings}
+    $settings = new admin_settingpage(
+                'block_compviz_settings',
+                new lang_string('pluginname', 'block_compviz'));
 
-    // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
+    // load settings only if fulltree is set.
     if ($ADMIN->fulltree) {
-        // TODO: Define actual plugin settings page and add it to the tree - {@link https://docs.moodle.org/dev/Admin_settings}.
+
+        $settings->add(new admin_setting_description(
+            'block_compviz/description',
+            new lang_string('admin_settings_desc', 'block_compviz'),
+            new lang_string('admin_settings_desc_desc', 'block_compviz')
+        ));
+
+        $settings->add(new admin_setting_configcheckbox(
+            'block_compviz/enabled',
+            new lang_string('enabled', 'block_compviz'),
+            new lang_string('enabled_desc', 'block_compviz'),
+            1
+        ));
     }
+
+    // Add the settings page to the block settings category.
+    // The settings page is already added elsewhere, so no need to add it again.
+    // This might be handled in another plugin or core Moodle code.
+    // $ADMIN->add('blocksettings', $settings);
 }

@@ -10,55 +10,119 @@
  * @copyright 2025 
  */
 
-.progress-horizontal {
-    display: flex;
-    height: 100%;
-    overflow: hidden;
-    line-height: 0;
-    font-size: .703125rem;
-    background-color: #e9ecef;
-    border-radius: .5rem;
-    flex-direction: column-reverse;
+/* Prevents the bottom frame line in the student settings */
+[id^="id_user_settings_"] {
+    border-bottom: 0 !important;
 }
 
-.progress-bar-horizontal {
-    display: flex;
-    flex-direction: column;
+/* Tooltip adjustments to display full tooltip content without line breaks */
+.bs-tooltip-left>.tooltip-inner {
+    max-width: fit-content !important;
+}
+
+/* make block settings icon for students more visible */
+.editing_usersettings {
+    font-size: x-large;
+    color: black;
+}
+
+/* Progress bar styles */
+
+.pb {
+    /* sensible defaults (overridden by inline styles in templates) */
+    --pb-progress: 60%;
+    --pb-fill-color: #22c55e;
+
+    /* auto-color helpers */
+    --dark-luminance: 10;
+    --light-luminance: 95;
+
+    /* fallback for older browsers */
+    --auto-color: black;
+    --pb-text-color: var(--pb-fill-color);
+
+    /* calculate some colors for color magic */
+    /* credits to https://specy.app/blog/posts/automatic-text-color-from-background */
+    --pb-text-color: lch(from var(--pb-fill-color) clamp(0, l, 70) c h);
+    --auto-color: lch(from var(--pb-fill-color) clamp(var(--dark-luminance), round((100 - l), 100), var(--light-luminance)) 0 0);
+}
+
+.pb.pb-bar {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
-    overflow: hidden;
-    color: #fff;
-    text-align: center;
-    white-space: nowrap;
-    background-color: #0f6cbf;
-    transition: width 0.6s ease;
-}
-
-.passing-value {
-    top: 0;
-    height: 100%;
-    width: 2px;
-    border-radius: 2px;
-    background-color: red;
-    z-index: 1;
-}
-
-.passing-value-horizontal {
-    height: 2px;
+    height: 35px;
     width: 100%;
-    background-color: red;
+    border-radius: 9px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    overflow: hidden;
+    color: var(--pb-text-color);
 }
 
-.progress>.progress-text {
+.pb.pb-bar::before {
+    content: "";
     position: absolute;
-    left: 0px;
-    padding: 8px 30px 8px 10px;
-    color: rgb(255, 255, 255);
+    inset: 0;
+    width: var(--pb-progress);
+    background: var(--pb-fill-color);
 }
 
-.progress>.progress-value {
+.pb .pb-text {
+    position: relative;
+    width: 100%;
+    text-align: center;
+}
+
+.pb .pb-text a {
+    color: inherit;
+}
+
+.pb .skill-toggle {
     position: absolute;
-    right: 0px;
-    padding: 8px 10px 8px;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 }
 
+.pb .skill-toggle::before {
+    content: "▼";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: black;
+}
 
+/* turn arrow when open */
+
+details:open .skill-toggle::before,
+details:open .skill-toggle::after {
+    content: "▲";
+}
+
+/* text color magic */
+.pb .pb-text::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    mix-blend-mode: normal;
+    clip-path: inset(0 calc(100% - var(--pb-progress)) 0 0);
+    color: var(--auto-color);
+}
+
+.pb .skill-toggle::after {
+    content: "▼";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    background: linear-gradient(90deg, var(--auto-color, black) var(--pb-progress), transparent calc(var(--pb-progress)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}

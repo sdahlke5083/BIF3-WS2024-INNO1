@@ -26,6 +26,15 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [
+
+    'block/compviz:show_graph' => [
+        'riskbitmask' => RISK_PERSONAL,
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => [
+            'user' => CAP_ALLOW,
+        ],
+    ],
     
     'block/compviz:myaddinstance' => [
         'captype' => 'write',
@@ -37,16 +46,6 @@ $capabilities = [
         'clonepermissionsfrom' => 'moodle/my:manageblocks'
 
     ],
-
-    'block/compviz:show_graph' => [
-        'riskbitmask' => RISK_PERSONAL,
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => [
-            'user' => CAP_ALLOW,
-        ],
-    ],
-
 
     'block/compviz:addinstance' => [
         'captype' => 'write',

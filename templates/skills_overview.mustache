@@ -23,85 +23,45 @@
     Styles and widths are responsive, no fixed widths used for skill/sub-skill bars.
 }}
 
-<div class="skills-overview-header text-center mb-3">{{header}}</div>
-<div class="skills-overview-container d-flex flex-column gap-2">
-
-    <h2 class="text-center mb-3">{{title}}</h2>
-
+<div class="text-center mb-3">{{header}}</div>
+<div class="d-flex flex-column">
     <!-- Total progress -->
-    <div class="total-progress-container d-flex justify-content-center mb-4">
-        <div class="total-progress text-center w-100" style="max-width: 280px;">
-            <div class="total-progress-label mb-2 text-muted">Total</div>
-            <div class="total-progress-bar position-relative bg-light border rounded" style="height: 40px;">
-                <!-- Fortschritt -->
-                <div class="total-progress-fill position-absolute top-0 start-0 h-100" style="width: {{totalProgress}}%; background-color: {{totalColor}};"></div>
-
-                <!-- Prozentanzeige zentriert -->
-                <div class="total-progress-text position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center text-dark">
-                    {{totalProgress}}%
-                </div>
-            </div>
+    <div class="justify-content-center mb-4 text-center w-100" style="max-width: 280px;">
+        <div class="text-muted">Total</div>
+        <div class="pb pb-bar mb-2" style="--pb-progress: {{totalProgress}}%;--pb-fill-color: {{totalColor}};height: 40px;">
+            <span class="pb-text bold" data-text="{{totalProgress}}%">{{totalProgress}}%</span>
         </div>
     </div>
 
     <!-- Skill list -->
     {{#skills}}
     <details>
-        <summary class="skill-summary list-unstyled p-0 d-flex justify-content-center">
-            <div class="skill-wrapper w-100" style="max-width: 90%;">
-                <div class="skill-progress-bar d-flex align-items-center bg-light border rounded position-relative mb-2" style="height: 35px;">
-                    <div class="skill-progress-fill position-absolute top-0 start-0 h-100" style="width: {{progress}}%; background-color: {{color}};"></div>
-                    <div class="skill-progress-text position-relative w-100 d-flex align-items-center justify-content-center text-dark">
-                        <div class="skill-name">{{name}}</div>
-                        <span class="skill-toggle position-absolute end-0 me-2">▼</span>
-                    </div>
-                </div>
+        <summary class="skill-wrapper list-unstyled p-0 w-100">
+            <div class="pb pb-bar mb-2 auto-color" style="--pb-progress: {{progress}}%;--pb-fill-color: {{color}};" data-toggle="tooltip" data-placement="left" title="{{fullName}}">
+                <span class="pb-text bold" data-text="{{name}}">{{name}}</span>
+                <span class="skill-toggle"></span>
             </div>
         </summary>
 
         <!-- Subskills: außerhalb, aber rechtsbündig an Skillbar ausgerichtet -->
-        {{#subSkills}}
-        <div class="d-flex justify-content-center w-100">
-            <div class="sub-skill-wrapper w-100" style="max-width: 90%;">
-                <div class="sub-skill-inner ms-auto" style="width: 85%;">
-                    <div class="sub-skill-progress-bar d-flex align-items-center bg-light border rounded position-relative mb-2" style="height: 35px;">
-                        <div class="sub-skill-progress-fill position-absolute top-0 start-0 h-100" style="width: {{progress}}%; background-color: {{color}};"></div>
-                        <div class="sub-skill-progress-text position-relative w-100 d-flex align-items-center justify-content-center text-dark">
-                            <div class="sub-skill-name">{{name}}</div>
-                        </div>
-                    </div>
-                </div>
+        {{#grade_items}}
+        <div class="d-flex justify-content-center ms-auto" style="width: 90%;">
+            <div class="pb pb-bar mb-2 auto-color" style="--pb-progress: {{progress}}%;--pb-fill-color: {{color}};" data-toggle="tooltip" data-placement="left" title="{{fullName}}">
+                <span class="pb-text bold" data-text="{{name}}">
+                    {{#url}}
+                        <a href="{{url}}" class="text-decoration-none">{{name}}</a>
+                    {{/url}}
+                    {{^url}}
+                        {{name}}
+                    {{/url}}
+                </span>
             </div>
         </div>
-        {{/subSkills}}
+        {{/grade_items}}
+        {{^grade_items}}
+        <div class="text-center text-muted mb-2">{{no_subskills}}</div>
+        {{/grade_items}}
 
     </details>
     {{/skills}}
 </div>
-
-<style>
-.skills-overview-header {
-    font-size: 16px;
-    font-weight: bold;
-}
-.total-progress-label {
-    font-size: 12px;
-}
-.total-progress-text {
-    font-weight: normal;
-    font-size: 12px;
-    z-index: 2;
-    pointer-events: none;
-}
-.total-progress-fill {
-    z-index: 1;
-}
-.skill-name, .sub-skill-name {
-    font-size: 12px;
-}
-.skill-toggle {
-    font-size: 12px;
-    cursor: pointer;
-    right: 10px;
-}
-</style>
