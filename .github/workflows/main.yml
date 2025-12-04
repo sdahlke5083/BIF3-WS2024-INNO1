@@ -51,7 +51,7 @@ jobs:
       - name: Checkout exact tag (for manual workflow dispatch)
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.tag != ''
         run: |
-          git checkout $TAG
+          git checkout "${{ github.event.inputs.tag }}"
 
       # -----------------------------------------
       # OPTIONAL LINTING
