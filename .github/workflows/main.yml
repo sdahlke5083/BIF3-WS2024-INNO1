@@ -42,8 +42,11 @@ jobs:
             TAG="${GITHUB_REF#refs/tags/}"
           fi
           echo "Using tag: $TAG"
+          if [ -z "$TAG" ] || [ "$TAG" = "refs/tags/" ]; then
+            echo "Error: No valid tag found"
+            exit 1
+          fi
           echo "TAG=$TAG" >> $GITHUB_ENV
-
       - name: Checkout exact tag
         run: |
           git fetch --tags
