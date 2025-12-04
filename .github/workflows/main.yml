@@ -3,7 +3,7 @@ name: Build, Package & Release on Tag
 on:
   push:
     tags:
-      - "*"        # Build on ANY tag
+      - "v*"       # Build only on tags starting with 'v' (semantic versioning)
   workflow_dispatch:
     inputs:
       tag:
