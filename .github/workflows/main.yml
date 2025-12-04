@@ -1,7 +1,6 @@
 name: Build, Package & Release on Tag
 
 on:
-  workflow_dispatch:
   push:
     tags:
       - "v*"       # Build only on tags starting with 'v' (semantic versioning)
