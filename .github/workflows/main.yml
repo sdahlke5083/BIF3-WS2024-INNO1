@@ -83,15 +83,15 @@ jobs:
         if: env.ENABLE_LINTING == 'true'
         run: |
           if [ ! -f package.json ]; then
-            echo "package.json missing -> cannot lint"
+            echo "Error: package.json not found. Linting requires a package.json with grunt and its plugins."
             exit 1
           fi
           if ! jq -e '.dependencies.grunt // .devDependencies.grunt' package.json > /dev/null; then
-            echo "grunt missing in package.json"
+            echo "Error: grunt is not listed in package.json. Please add grunt to your devDependencies."
             exit 1
           fi
           if ! npx grunt --help > /dev/null; then
-            echo "grunt not usable"
+            echo "Error: Grunt is not properly installed. Please ensure grunt and grunt-cli are in your dependencies or devDependencies."
             exit 1
           fi
 
