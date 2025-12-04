@@ -3,7 +3,7 @@ name: Build, Package & Release on Tag
 on:
   push:
     tags:
-      - "*"        # Build on ANY tag
+      - "v*"       # Build only on tags starting with 'v' (semantic versioning)
   workflow_dispatch:
     inputs:
       tag:
@@ -42,8 +42,12 @@ jobs:
             TAG="${GITHUB_REF#refs/tags/}"
           fi
           echo "Using tag: $TAG"
+          if [ -z "$TAG" ] || [ "$TAG" = "refs/tags/" ]; then
+            echo "Error: No valid tag found"
+            exit 1
+          fi
           echo "TAG=$TAG" >> $GITHUB_ENV
-
+          
       - name: Checkout exact tag (for manual workflow dispatch)
         if: github.event.inputs.tag != ''
         run: |
@@ -62,7 +66,11 @@ jobs:
         if: env.ENABLE_LINTING == 'true'
         run: |
           if [ -f package.json ]; then
-            npm ci || npm install
+            if [ -f package-lock.json ]; then
+              npm ci
+            else
+              npm install
+            fi
           else
             echo "No package.json found, skipping npm install."
           fi
@@ -102,7 +110,6 @@ jobs:
       - name: CSS lint
         if: env.ENABLE_LINTING == 'true'
         run: npx grunt css
-  
       # -----------------------------------------
       # PACKAGE MOODLE PLUGIN
       # -----------------------------------------
