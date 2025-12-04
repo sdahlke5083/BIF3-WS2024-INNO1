@@ -90,7 +90,7 @@ jobs:
             echo "Error: grunt is not listed in package.json. Please add grunt to your devDependencies."
             exit 1
           fi
-          if ! npx grunt --help > /dev/null; then
+          if ! npx grunt --help > /dev/null 2>&1; then
             echo "Error: Grunt is not properly installed. Please ensure grunt and grunt-cli are in your dependencies or devDependencies."
             exit 1
           fi
