@@ -47,7 +47,6 @@ jobs:
             exit 1
           fi
           echo "TAG=$TAG" >> $GITHUB_ENV
-          
       - name: Checkout exact tag (for manual workflow dispatch)
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.tag != ''
         run: |
