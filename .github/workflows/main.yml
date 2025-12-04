@@ -102,7 +102,6 @@ jobs:
       - name: CSS lint
         if: env.ENABLE_LINTING == 'true'
         run: npx grunt css
-  
       # -----------------------------------------
       # PACKAGE MOODLE PLUGIN
       # -----------------------------------------
