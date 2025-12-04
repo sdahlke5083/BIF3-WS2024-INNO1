@@ -51,8 +51,19 @@ jobs:
       - name: Checkout exact tag (for manual workflow dispatch)
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.tag != ''
         run: |
-          git checkout "${{ github.event.inputs.tag }}"
-
+          TAG="${{ github.event.inputs.tag }}"
+          # Validate tag format (semantic versioning: v1.2.3 or v1.2.3-rc1 etc.)
+          if ! [[ "$TAG" =~ ^v[0-9]+(\.[0-9]+){2}(-[A-Za-z0-9._-]+)?$ ]]; then
+            echo "Error: Tag format invalid: $TAG"
+            exit 1
+          fi
+          # Check that the tag exists
+          if ! git rev-parse --verify --quiet "refs/tags/$TAG"; then
+            echo "Error: Tag does not exist: $TAG"
+            exit 1
+          fi
+          # Checkout the tag safely
+          git checkout "tags/$TAG"
       # -----------------------------------------
       # OPTIONAL LINTING
       # -----------------------------------------
