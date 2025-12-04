@@ -44,9 +44,9 @@ jobs:
           echo "Using tag: $TAG"
           echo "TAG=$TAG" >> $GITHUB_ENV
 
-      - name: Checkout exact tag
+      - name: Checkout exact tag (for manual workflow dispatch)
+        if: github.event.inputs.tag != ''
         run: |
-          git fetch --tags
           git checkout $TAG
 
       # -----------------------------------------
