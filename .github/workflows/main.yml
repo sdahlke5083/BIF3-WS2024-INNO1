@@ -1,28 +1,72 @@
-name: Build & release Moodle plugin on tag
+name: Build, Package & Release on Tag
 
 on:
   workflow_dispatch:
   push:
     tags:
-      - "v*"        # adjust if needed
+      - "v*"       # Build only on tags starting with 'v' (semantic versioning)
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to build"
+        required: false
+        default: ""
 
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Required for creating releases
+      contents: write
 
     env:
-      # Moodle plugin frankenstyle name
       PLUGIN_DIR: block_compviz
-
-      # Set to "false" to skip ALL linting steps
       ENABLE_LINTING: "false"
 
     steps:
+      # -----------------------------------------
+      # CHECKOUT
+      # -----------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
+      # -----------------------------------------
+      # DETERMINE TAG (unified logic)
+      # -----------------------------------------
+      - name: Determine tag
+        run: |
+          if [ -n "${{ github.event.inputs.tag }}" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "Using tag: $TAG"
+          if [ -z "$TAG" ] || [ "$TAG" = "refs/tags/" ]; then
+            echo "Error: No valid tag found"
+            exit 1
+          fi
+          echo "TAG=$TAG" >> $GITHUB_ENV
+      - name: Checkout exact tag (for manual workflow dispatch)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.tag != ''
+        run: |
+          TAG="${{ github.event.inputs.tag }}"
+          # Validate tag format (semantic versioning: v1.2.3 or v1.2.3-rc1 etc.)
+          if ! [[ "$TAG" =~ ^v[0-9]+(\.[0-9]+){2}(-[A-Za-z0-9._-]+)?$ ]]; then
+            echo "Error: Tag format invalid: $TAG"
+            exit 1
+          fi
+          # Check that the tag exists
+          if ! git rev-parse --verify --quiet "refs/tags/$TAG"; then
+            echo "Error: Tag does not exist: $TAG"
+            exit 1
+          fi
+          # Checkout the tag safely
+          git checkout "tags/$TAG"
+      # -----------------------------------------
+      # OPTIONAL LINTING
+      # -----------------------------------------
       - name: Set up Node.js
         if: env.ENABLE_LINTING == 'true'
         uses: actions/setup-node@v4
@@ -42,9 +86,6 @@ jobs:
             echo "No package.json found, skipping npm install."
           fi
 
-      # -------------------------
-      # LINTING (conditionally run)
-      # -------------------------
       - name: Install jq
         if: env.ENABLE_LINTING == 'true'
         run: sudo apt-get update && sudo apt-get install -y jq
@@ -64,43 +105,34 @@ jobs:
             echo "Error: Grunt is not properly installed. Please ensure grunt and grunt-cli are in your dependencies or devDependencies."
             exit 1
           fi
-          echo "Grunt is available and ready for linting."
 
       - name: Mustache lint
         if: env.ENABLE_LINTING == 'true'
         run: npx grunt mustache
 
-      - name: Grunt ESLint
+      - name: ESLint
         if: env.ENABLE_LINTING == 'true'
         run: npx grunt eslint
 
-      - name: Grunt AMD
+      - name: AMD lint
         if: env.ENABLE_LINTING == 'true'
         run: npx grunt amd
 
-      - name: Grunt CSS
+      - name: CSS lint
         if: env.ENABLE_LINTING == 'true'
         run: npx grunt css
-
-      # -------------------------
-      # PACKAGE
-      # -------------------------
-
+      # -----------------------------------------
+      # PACKAGE MOODLE PLUGIN
+      # -----------------------------------------
       - name: Build plugin archives
         run: |
           set -e
-
-          TAG_NAME="${GITHUB_REF_NAME}"
-          if [ -z "$TAG_NAME" ]; then
-            echo "Error: GITHUB_REF_NAME is not set"
-            exit 1
-          fi
+          TAG_NAME="$TAG"
           ARCHIVE_BASENAME="${PLUGIN_DIR}-${TAG_NAME}"
 
           mkdir -p dist
           mkdir -p "build/${PLUGIN_DIR}"
 
-          # Copy everything except build-time junk
           rsync -a ./ "build/${PLUGIN_DIR}/" \
             --exclude ".git" \
             --exclude ".github" \
@@ -117,28 +149,29 @@ jobs:
 
           cd build
 
-          # ZIP archive (Moodle-friendly)
           zip -r "../dist/${ARCHIVE_BASENAME}.zip" "${PLUGIN_DIR}"
-
-          # TAR.GZ archive
           tar -czf "../dist/${ARCHIVE_BASENAME}.tar.gz" "${PLUGIN_DIR}"
 
           cd ..
-
-          # List build artifacts for verification
           ls -R dist
 
+      # -----------------------------------------
+      # UPLOAD ARTIFACTS
+      # -----------------------------------------
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: moodle-plugin-${{ github.ref_name }}
+          name: moodle-plugin-${{ env.TAG }}
           path: dist/*
 
+      # -----------------------------------------
+      # RELEASE
+      # -----------------------------------------
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
+          tag_name: ${{ env.TAG }}
+          name: Release ${{ env.TAG }}
           files: |
             dist/*.zip
             dist/*.tar.gz
