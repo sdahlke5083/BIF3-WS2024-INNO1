@@ -133,3 +133,15 @@ details:open .skill-toggle::after {
     width: auto;
     max-width: 100%;
 }
+
+/* style for the color preview boxes in the color picker */
+.color-preview-box {
+    --bg-color: #ffffff;
+    --auto-color: lch(from var(--bg-color) clamp(10, round((100 - l), 100), 95) 0 0);
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+    background-color: var(--bg-color);
+    color: var(--auto-color, black);
+    text-align: end;
+}

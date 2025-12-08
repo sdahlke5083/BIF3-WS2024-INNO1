@@ -94,10 +94,11 @@ class user_form extends dynamic_form
 
         // Add dropdown to select what Color theme to use
         $options = block_compviz_get_color_themes();
-        $mform->addElement('select', 'theme', get_string('theme', 'block_compviz'), $options );
+        $options = $this->convert_to_choicelist($options);
+        $mform->addElement('choicedropdown', 'theme', get_string('theme', 'block_compviz'), $options );
         $mform->setType('theme', PARAM_INT);
         $mform->setDefault('theme', 1);
-        $mform->addHelpButton('theme', 'theme', 'block_compviz');
+        #$mform->addHelpButton('theme', 'theme', 'block_compviz');
         $mform->hideIf('theme', 'color_mode', 'neq', 'theme');
         
         // add 5 custom color options as text fields for custom color selection and group them.
@@ -164,5 +165,28 @@ class user_form extends dynamic_form
     protected function get_page_url_for_dynamic_submission(): \moodle_url
     {
         return new \moodle_url('/course');
+    }
+
+    private function convert_to_choicelist($array)
+    {
+
+        // Define the options for the dropdown list.
+        $choicelist = new \core\output\choicelist();
+        
+        foreach ($array as $key => $item) {
+            $choicelist->add_option(
+                $key,
+                $item['name'],
+                [
+                    'description' => '0%'.
+                                     '<span class="color-preview-box" style="--bg-color:#' . $item['color5'] . ';">20%</span>' .
+                                     '<span class="color-preview-box" style="--bg-color:#' . $item['color4'] . ';">40%</span>' .
+                                     '<span class="color-preview-box" style="--bg-color:#' . $item['color3'] . ';">60%</span>' .
+                                     '<span class="color-preview-box" style="--bg-color:#' . $item['color2'] . ';">80%</span>' .
+                                     '<span class="color-preview-box" style="--bg-color:#' . $item['color1'] . ';">100%</span>',
+                ]
+            );
+        }
+        return $choicelist;
     }
 }

@@ -262,7 +262,7 @@ function block_compviz_get_color_themes()
     global $DB;
 
     // SQL to get all color themes
-    $sql = "SELECT id, name
+    $sql = "SELECT *
             FROM {block_compviz_colors}
             ORDER BY id ASC";
 
@@ -271,7 +271,14 @@ function block_compviz_get_color_themes()
 
     $result = [];
     foreach($color_themes as $ct){
-        $result[$ct->id] = $ct->name;
+        $result[$ct->id] = array(
+            'name' => $ct->name,
+            'color1' => $ct->color1,
+            'color2' => $ct->color2,
+            'color3' => $ct->color3,
+            'color4' => $ct->color4,
+            'color5' => $ct->color5,
+        );
     }
 
     // Return result array
