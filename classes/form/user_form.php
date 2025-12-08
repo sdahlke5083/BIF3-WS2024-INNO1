@@ -28,19 +28,52 @@
 namespace block_compviz\form;
 use core_form\dynamic_form;
 use MoodleQuickForm;
+use core\context\user as context_user;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once "{$CFG->dirroot}/blocks/compviz/db/display_data.php";
 
-
 class user_form extends dynamic_form
 {
+
+    /**
+     * Display the form using a custom QuickForm renderer so we can intercept
+     * colorpicker elements and render them with the plugin template.
+     */
+    public function display() {
+        global $CFG;
+        require_once($CFG->dirroot . '/blocks/compviz/classes/form/custom_quickform_renderer.php');
+
+        $renderer = new \block_compviz\form\custom_quickform_renderer();
+
+        // The QuickForm object is stored in $this->_form by dynamic_form.
+        if (isset($this->_form) && is_object($this->_form)) {
+            $this->_form->accept($renderer);
+            echo $renderer->toHtml();
+            return;
+        }
+
+        // Fallback: use parent display if something unexpected occurs.
+        parent::display();
+    }
 
     public function definition()
     {
         global $CFG;
         $mform = $this->_form;
+
+        // Add a color picker for custom color selection (hex code).
+        // register the custom color picker element type.
+        MoodleQuickForm::registerElementType(
+            // This is the element name used in the `addElement()` function.
+            'bccolorpicker',
+            // The path to the class file.
+            "{$CFG->dirroot}/blocks/compviz/classes/form/colorpicker_form_element.php",
+            // The class name that implements the element.
+            'MoodleQuickForm_bccolorpicker'
+        );
+
 
         // Add a header.
         $mform->addElement('header', 'user_settings', get_string('pluginname', 'block_compviz'));
@@ -69,7 +102,7 @@ class user_form extends dynamic_form
         
         // add 5 custom color options as text fields for custom color selection and group them.
         for ($i = 1; $i <= 5; $i++) {
-            $mform->addElement('text', "custom_color_$i", get_string("custom_color_$i", 'block_compviz'));
+            $mform->addElement('bccolorpicker', "custom_color_$i", get_string("custom_color_$i", 'block_compviz'));
             $mform->setType("custom_color_$i", PARAM_RAW_TRIMMED);
             $colorindex = $i - 1;
             $mform->setDefault("custom_color_$i", "#{$colorindex}0ff{$colorindex}0");
@@ -77,25 +110,15 @@ class user_form extends dynamic_form
             $mform->hideIf("custom_color_$i", 'color_mode', 'neq', 'custom');
         }
 
-        // Add a color picker for custom color selection (hex code).
-        // register the custom color picker element type.
-        MoodleQuickForm::registerElementType(
-            // This is the element name used in the `addElement()` function.
-            'configcolourpicker',
-            // The path to the class file.
-            "{$CFG->dirroot}/blocks/compviz/classes/form/colorpicker_form_element.php",
-            // The class name that implements the element.
-            'colorpicker_form_element'
-        );
-        
         // Add a button to save the settings.
         /* $this->add_action_buttons(); */
+
     }
 
     protected function get_context_for_dynamic_submission(): \context
     {
         global $USER;
-        return \context_user::instance($USER->id);
+        return context_user::instance($USER->id);
     }
 
     public function check_access_for_dynamic_submission(): void

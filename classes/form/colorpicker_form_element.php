@@ -23,51 +23,83 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
-
 global $CFG;
+require_once($CFG->dirroot . '/blocks/compviz/classes/form/colorpicker.php');
+require_once($CFG->libdir . '/form/templatable_form_element.php');
 
-use MoodleQuickForm_text;
+use block_compviz\form\HTML_QuickForm_bccolorpicker;
 
-require_once $CFG->libdir . '/form/text.php';
+class MoodleQuickForm_bccolorpicker extends HTML_QuickForm_bccolorpicker implements templatable {
+    use templatable_form_element;
 
-/**
- * Class for a color picker form element.
- *
- * This class extends MoodleQuickForm_text to create a color picker input field
- * with validation and preview capabilities.
- *
- * @package     block_compviz
- * @copyright   2024 BIF-INNO-Group10
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class colorpicker_form_element extends MoodleQuickForm_text
-{
+    /** @var string html for help button, if empty then no help */
+    var $_helpbutton = '';
 
+    /** @var bool if true label will be hidden */
+    var $_hiddenLabel = false;
 
-    private $name = null;
-    private $visiblename;
-    private $description;
+    /** @var bool Whether to force the display of this element to flow LTR. */
+    protected $forceltr = false;
 
-    // $previewconfig Array('selector'=>'.some .css .selector','style'=>'backgroundColor');
-    private $previewconfig = null;
-
-    /** 
-     * Constructor for the colorpicker_form_element class.
-     * 
-     * @param string $name
-     * @param string $visiblename
-     * @param string $description
+    /**
+     * constructor
+     *
+     * @param string $elementName (optional) name of the text field
+     * @param string $elementLabel (optional) text field label
+     * @param string $attributes (optional) Either a typical HTML attribute string or an associative array
      */
-    public function __construct($name = null, $visiblename = null, $description = null) {
-        debugging('constructor', DEBUG_ALL);
-        if ($name == null) {
-            // This is broken quickforms messing with the constructors.
-            return;
-        }
-
-        parent::__construct($name, $visiblename, $description);
-        $this->set_force_ltr(true);
+    public function __construct($elementName = null, $elementLabel = null, $attributes = null)
+    {
+        parent::__construct($elementName, $elementLabel, $attributes);
     }
+
+    /**
+     * Old syntax of class constructor. Deprecated in PHP7.
+     *
+     * @deprecated since Moodle 3.1
+     */
+    public function MoodleQuickForm_bccolorpicker($elementName = null, $elementLabel = null, $attributes = null)
+    {
+        debugging('Use of class name as constructor is deprecated', DEBUG_DEVELOPER);
+        self::__construct($elementName, $elementLabel, $attributes);
+    }
+
+    /**
+     * Sets label to be hidden
+     *
+     * @param bool $hiddenLabel sets if label should be hidden
+     */
+    function setHiddenLabel($hiddenLabel)
+    {
+        $this->_hiddenLabel = $hiddenLabel;
+    }
+
+    /**
+     * Freeze the element so that only its value is returned and set persistantfreeze to false
+     *
+     * @since     Moodle 2.4
+     * @access    public
+     * @return    void
+     */
+    function freeze()
+    {
+        $this->_flagFrozen = true;
+        // No hidden element is needed refer MDL-30845
+        $this->setPersistantFreeze(false);
+    } //end func freeze
+
+    /**
+     * Returns the html to be used when the element is frozen
+     *
+     * @since     Moodle 2.4
+     * @return    string Frozen html
+     */
+    function getFrozenHtml()
+    {
+        $attributes = array('readonly' => 'readonly');
+        $this->updateAttributes($attributes);
+        return $this->_getTabs() . '<input' . $this->_getAttrString($this->_attributes) . ' />' . $this->_getPersistantData();
+    } //end func getFrozenHtml
 
     /**
      * Returns HTML for this form element.
@@ -76,10 +108,6 @@ class colorpicker_form_element extends MoodleQuickForm_text
      */
     public function toHtml()
     {
-        debugging('Debug toHtml called', DEBUG_ALL);
-        global $PAGE, $OUTPUT;
-
-        // Add the class at the last minute.
         if ($this->get_force_ltr()) {
             if (!isset($this->_attributes['class'])) {
                 $this->_attributes['class'] = 'text-ltr';
@@ -92,22 +120,7 @@ class colorpicker_form_element extends MoodleQuickForm_text
         if ($this->_flagFrozen) {
             return $this->getFrozenHtml();
         }
-
-        $icon = new pix_icon('i/loading', get_string('loading', 'admin'), 'moodle', ['class' => 'loadingicon']);
-        $context = (object) [
-            'id' => $this->getAttribute('id'),
-            'name' => $this->visiblename,
-            'value' => '',
-            'icon' => $icon->export_for_template($OUTPUT),
-            'haspreviewconfig' => !empty($this->previewconfig),
-            'forceltr' => $this->get_force_ltr()
-        ];
-
-        $element = $OUTPUT->render_from_template('core_admin/setting_configcolourpicker', $context);
-        $PAGE->requires->js_init_call('M.util.init_colour_picker', array($this->getAttribute('id'), $this->previewconfig));
-
-
-        $html = $element; //$this->_getTabs() . '<input' . $this->_getAttrString($this->_attributes) . ' />';
+        $html = $this->_getTabs() . '<input' . $this->_getAttrString($this->_attributes) . ' />';
 
         if ($this->_hiddenLabel) {
             return '<label class="accesshide" for="' . $this->getAttribute('id') . '" >' .
@@ -117,202 +130,35 @@ class colorpicker_form_element extends MoodleQuickForm_text
         }
     }
 
-
     /**
-     * Accepts a renderer
+     * get html for help button
      *
-     * @param HTML_QuickForm_Renderer $renderer the renderer for the element.
-     * @param boolean $required not used.
-     * @param string $error not used.
-     * @return void
+     * @return string html for help button
      */
-    public function accept(&$renderer, $required = false, $error = null)
+    function getHelpButton()
     {
-        $renderer->renderElement($this, false, '');
+        return $this->_helpbutton;
     }
 
     /**
-     * Validates the colour that was entered by the user
+     * Get force LTR option.
      *
-     * @param string $data
-     * @return string|false
+     * @return bool
      */
-    protected function validate($data)
+    public function get_force_ltr()
     {
-        /**
-         * List of valid HTML colour names
-         *
-         * @var array
-         */
-        $colornames = array(
-            'aliceblue',
-            'antiquewhite',
-            'aqua',
-            'aquamarine',
-            'azure',
-            'beige',
-            'bisque',
-            'black',
-            'blanchedalmond',
-            'blue',
-            'blueviolet',
-            'brown',
-            'burlywood',
-            'cadetblue',
-            'chartreuse',
-            'chocolate',
-            'coral',
-            'cornflowerblue',
-            'cornsilk',
-            'crimson',
-            'cyan',
-            'darkblue',
-            'darkcyan',
-            'darkgoldenrod',
-            'darkgray',
-            'darkgrey',
-            'darkgreen',
-            'darkkhaki',
-            'darkmagenta',
-            'darkolivegreen',
-            'darkorange',
-            'darkorchid',
-            'darkred',
-            'darksalmon',
-            'darkseagreen',
-            'darkslateblue',
-            'darkslategray',
-            'darkslategrey',
-            'darkturquoise',
-            'darkviolet',
-            'deeppink',
-            'deepskyblue',
-            'dimgray',
-            'dimgrey',
-            'dodgerblue',
-            'firebrick',
-            'floralwhite',
-            'forestgreen',
-            'fuchsia',
-            'gainsboro',
-            'ghostwhite',
-            'gold',
-            'goldenrod',
-            'gray',
-            'grey',
-            'green',
-            'greenyellow',
-            'honeydew',
-            'hotpink',
-            'indianred',
-            'indigo',
-            'ivory',
-            'khaki',
-            'lavender',
-            'lavenderblush',
-            'lawngreen',
-            'lemonchiffon',
-            'lightblue',
-            'lightcoral',
-            'lightcyan',
-            'lightgoldenrodyellow',
-            'lightgray',
-            'lightgrey',
-            'lightgreen',
-            'lightpink',
-            'lightsalmon',
-            'lightseagreen',
-            'lightskyblue',
-            'lightslategray',
-            'lightslategrey',
-            'lightsteelblue',
-            'lightyellow',
-            'lime',
-            'limegreen',
-            'linen',
-            'magenta',
-            'maroon',
-            'mediumaquamarine',
-            'mediumblue',
-            'mediumorchid',
-            'mediumpurple',
-            'mediumseagreen',
-            'mediumslateblue',
-            'mediumspringgreen',
-            'mediumturquoise',
-            'mediumvioletred',
-            'midnightblue',
-            'mintcream',
-            'mistyrose',
-            'moccasin',
-            'navajowhite',
-            'navy',
-            'oldlace',
-            'olive',
-            'olivedrab',
-            'orange',
-            'orangered',
-            'orchid',
-            'palegoldenrod',
-            'palegreen',
-            'paleturquoise',
-            'palevioletred',
-            'papayawhip',
-            'peachpuff',
-            'peru',
-            'pink',
-            'plum',
-            'powderblue',
-            'purple',
-            'red',
-            'rosybrown',
-            'royalblue',
-            'saddlebrown',
-            'salmon',
-            'sandybrown',
-            'seagreen',
-            'seashell',
-            'sienna',
-            'silver',
-            'skyblue',
-            'slateblue',
-            'slategray',
-            'slategrey',
-            'snow',
-            'springgreen',
-            'steelblue',
-            'tan',
-            'teal',
-            'thistle',
-            'tomato',
-            'turquoise',
-            'violet',
-            'wheat',
-            'white',
-            'whitesmoke',
-            'yellow',
-            'yellowgreen'
-        );
+        return $this->forceltr;
+    }
 
-        if (preg_match('/^#?([[:xdigit:]]{3}){1,2}$/', $data)) {
-            if (strpos($data, '#') !== 0) {
-                $data = '#' . $data;
-            }
-            return $data;
-        } else if (in_array(strtolower($data), $colornames)) {
-            return $data;
-        } else if (preg_match('/rgb\(\d{0,3}%?\, ?\d{0,3}%?, ?\d{0,3}%?\)/i', $data)) {
-            return $data;
-        } else if (preg_match('/rgba\(\d{0,3}%?\, ?\d{0,3}%?, ?\d{0,3}%?\, ?\d(\.\d)?\)/i', $data)) {
-            return $data;
-        } else if (preg_match('/hsl\(\d{0,3}\, ?\d{0,3}%, ?\d{0,3}%\)/i', $data)) {
-            return $data;
-        } else if (preg_match('/hsla\(\d{0,3}\, ?\d{0,3}%,\d{0,3}%\, ?\d(\.\d)?\)/i', $data)) {
-            return $data;
-        } else if (($data == 'transparent') || ($data == 'currentColor') || ($data == 'inherit')) {
-            return $data;
-        } else {
-            return false;
-        }
+    /**
+     * Force the field to flow left-to-right.
+     *
+     * This is useful for fields such as URLs, passwords, settings, etc...
+     *
+     * @param bool $value The value to set the option to.
+     */
+    public function set_force_ltr($value)
+    {
+        $this->forceltr = (bool) $value;
     }
 }

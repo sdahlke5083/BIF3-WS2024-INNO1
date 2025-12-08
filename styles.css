@@ -126,3 +126,10 @@ details:open .skill-toggle::after {
     background-clip: text;
     color: transparent;
 }
+
+/* our custom styles for the color picker */
+.bccolorpicker {
+    min-width: 50px;
+    width: auto;
+    max-width: 100%;
+}
