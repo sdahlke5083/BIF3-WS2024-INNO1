@@ -101,7 +101,7 @@ class block_compviz extends block_base
 
         foreach ($skills as $skill) {
             //Begrenzung der LOs namen
-            $maxLength = 25; 
+            $maxLength = 99; // TODO: Remove since CSS now handles overflow with ellipsis.
             $skill->name = trim(preg_replace('/^\p{So}+\s*/u', '', $skill->name));
             $skill->fullName = $skill->name;
             if (strlen($skill->name) > $maxLength) {

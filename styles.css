@@ -73,6 +73,9 @@
     position: relative;
     width: 100%;
     text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .pb .pb-text a {
@@ -111,6 +114,9 @@ details:open .skill-toggle::after {
     mix-blend-mode: normal;
     clip-path: inset(0 calc(100% - var(--pb-progress)) 0 0);
     color: var(--auto-color);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .pb .skill-toggle::after {
