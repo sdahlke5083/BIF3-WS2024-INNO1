@@ -73,6 +73,9 @@
     position: relative;
     width: 100%;
     text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .pb .pb-text a {
@@ -111,6 +114,9 @@ details:open .skill-toggle::after {
     mix-blend-mode: normal;
     clip-path: inset(0 calc(100% - var(--pb-progress)) 0 0);
     color: var(--auto-color);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .pb .skill-toggle::after {
@@ -125,4 +131,23 @@ details:open .skill-toggle::after {
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+}
+
+/* our custom styles for the color picker */
+.bccolorpicker {
+    min-width: 50px;
+    width: auto;
+    max-width: 100%;
+}
+
+/* style for the color preview boxes in the color picker */
+.color-preview-box {
+    --bg-color: #ffffff;
+    --auto-color: lch(from var(--bg-color) clamp(10, round((100 - l), 100), 95) 0 0);
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+    background-color: var(--bg-color);
+    color: var(--auto-color, black);
+    text-align: end;
 }
