@@ -75,14 +75,19 @@ class user_form extends dynamic_form
         );
 
 
-        // Add a header.
-        $mform->addElement('header', 'user_settings', get_string('pluginname', 'block_compviz'));
+        // Add a header and short description for the user settings.
+        $mform->addElement('header', 'user_settings', get_string('usersettings', 'block_compviz'));
+        $mform->addElement('static', 'usersettings_desc', '', get_string('usersettings_desc', 'block_compviz'));
 
         // Add a checkbox for showing completed skills.
         $mform->addElement('checkbox', 'show_completed', get_string('show_completed', 'block_compviz'));
         $mform->setDefault('show_completed', 1);
         $mform->addHelpButton('show_completed', 'show_completed', 'block_compviz');
 
+
+        // Appearance section: explain color options and grouping.
+        $mform->addElement('header', 'user_settings_appearance', get_string('appearance', 'block_compviz'));
+        $mform->addElement('static', 'color_settings_desc', '', get_string('color_settings_desc', 'block_compviz'));
 
         // Add a radio group to choose between theme or custom color.
         $radioarray = [];

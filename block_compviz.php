@@ -100,14 +100,8 @@ class block_compviz extends block_base
         $completionmap = block_compviz_get_cm_completion_states_for_user($quizcmids, $USER->id);
 
         foreach ($skills as $skill) {
-            //Begrenzung der LOs namen
-            $maxLength = 99; // TODO: Remove since CSS now handles overflow with ellipsis.
             $skill->name = trim(preg_replace('/^\p{So}+\s*/u', '', $skill->name));
-            $skill->fullName = $skill->name;
-            if (strlen($skill->name) > $maxLength) {
-                $skill->name = substr($skill->name, 0, $maxLength) . '...';
-            }
-
+            
             $progress = $this->block_compviz_get_progress($skill->finalgrade, $skill->grademax);
             $skill->progress = $progress;
             $skill->color = $this->get_progress_color($progress, $USER->id);
@@ -121,12 +115,7 @@ class block_compviz extends block_base
                 else{
                     $subSkill->progress = $progress;
                     $subSkill->color = $this->get_progress_color($progress, $USER->id);
-                    //Begrenzung des Lo namen
                     $subSkill->name = trim(preg_replace('/^\p{So}+\s*/u', '', $subSkill->name));
-                    $subSkill->fullName = $subSkill->name;
-                    if (strlen($subSkill->name) > floor($maxLength * 0.9)) {
-                        $subSkill->name = substr($subSkill->name, 0, floor($maxLength * 0.9)) . '...';
-                    }
                 }
                 if (!empty($subSkill->cmid) && !empty($subSkill->itemmodule) && $subSkill->itemmodule === 'quiz') {
                     $state = $completionmap[$subSkill->cmid] ?? COMPLETION_INCOMPLETE;
@@ -147,7 +136,7 @@ class block_compviz extends block_base
                     // Farbe anhand des Completion-States überschreiben.
                     $subSkill->color = $this->get_progress_color($progress, $USER->id, $state);
 
-                    // Prefix vor den vorhandenen Namen setzen
+                    // DEBUG: Prefix vor den vorhandenen Namen setzen
                     //$subSkill->name = '[' . $label . '] ' . $subSkill->name;
                 }
                 if (!empty($subSkill->cmid) && !empty($subSkill->itemmodule)) {

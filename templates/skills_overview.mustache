@@ -37,7 +37,7 @@
     {{#skills}}
     <details>
         <summary class="skill-wrapper list-unstyled p-0 w-100">
-            <div class="pb pb-bar mb-2 auto-color" style="--pb-progress: {{progress}}%;--pb-fill-color: {{color}};" data-toggle="tooltip" data-placement="left" title="{{fullName}}">
+            <div class="pb pb-bar mb-2 auto-color" style="--pb-progress: {{progress}}%;--pb-fill-color: {{color}};" data-toggle="tooltip" data-placement="left" title="{{name}}">
                 <span class="pb-text bold" data-text="{{name}}">{{name}}</span>
                 <span class="skill-toggle"></span>
             </div>
@@ -46,7 +46,7 @@
         <!-- Subskills: außerhalb, aber rechtsbündig an Skillbar ausgerichtet -->
         {{#grade_items}}
         <div class="d-flex justify-content-center ms-auto" style="width: 90%;">
-            <div class="pb pb-bar mb-2 auto-color" style="--pb-progress: {{progress}}%;--pb-fill-color: {{color}};" data-toggle="tooltip" data-placement="left" title="{{fullName}}">
+            <div class="pb pb-bar mb-2 auto-color" style="--pb-progress: {{progress}}%;--pb-fill-color: {{color}};" data-toggle="tooltip" data-placement="left" title="{{name}}">
                 <span class="pb-text bold" data-text="{{name}}">
                     {{#url}}
                         <a href="{{url}}" class="text-decoration-none">{{name}}</a>
