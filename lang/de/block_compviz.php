@@ -48,15 +48,16 @@ $string['select_leo_help'] = 'Wählen Sie eine Bewertungs- bzw. Lernzielkategori
 
 // User settings form strings
 $string['appearance'] = 'Darstellung';
-$string['color_settings_desc'] = 'Darstellungseinstellungen bestimmen, wie Fortschrittsbalken und Diagramme in Ihrer Ansicht eingefärbt werden. Sie können Theme-Farben verwenden oder eine persönliche Palette mit dem Farbwähler erstellen.';
+$string['color_settings_desc'] = 'Darstellungseinstellungen bestimmen, wie Fortschrittsbalken und Diagramme in Ihrer Ansicht eingefärbt werden. Theme-Farben passen sich automatisch an das Design Ihrer Moodle-Site an (empfohlen für Konsistenz). Benutzerdefinierte Farben ermöglichen eine persönliche Palette - nützlich für Barrierefreiheit, Farbenblindheits-Anpassungen oder persönliche Vorlieben.';
+$string['color_settings_note'] = 'Hinweis: Die Farbwahl kann die Lesbarkeit erheblich beeinflussen. Berücksichtigen Sie Kontrast und Barrierefreiheit bei der Auswahl benutzerdefinierter Farben.';
 $string['settingsnotsaved'] = 'Benutzereinstellungen konnten nicht gespeichert werden.';
 $string['settingssaved'] = 'Benutzereinstellungen gespeichert.';
-$string['show_completed'] = 'Abgeschlossene Fähigkeiten anzeigen';
-$string['show_completed_help'] = 'Wenn aktiviert, werden abgeschlossene Fähigkeiten in Ihrer Fähigkeitenübersicht angezeigt. Wenn deaktiviert, werden nur unvollständige oder in Bearbeitung befindliche Fähigkeiten angezeigt, damit Sie sich auf ausstehende Aufgaben konzentrieren können.';
+$string['show_completed'] = 'Abgeschlossene LEOs anzeigen';
+$string['show_completed_help'] = 'Lernzielkategorien (LEOs) repräsentieren größere Kompetenzgruppen in Ihrem Kurs. Wenn aktiviert, bleiben vollständig abgeschlossene LEOs in Ihrer Übersicht sichtbar. Wenn deaktiviert, werden abgeschlossene LEOs automatisch ausgeblendet, sodass Sie sich nur auf Fähigkeiten konzentrieren können, die noch Arbeit erfordern. Hinweis: Einzelne Aktivitäten (µLEOs) innerhalb eines LEOs werden unabhängig von dieser Einstellung immer angezeigt.';
 $string['theme'] = 'Farbthema';
-$string['theme_help'] = 'Wählen Sie ein gespeichertes Farbschema zur Darstellung der Fortschrittsbalken. Diese Option ist nur aktiv, wenn "Theme-Farben verwenden" in der Farbauswahl aktiviert ist.';
+$string['theme_help'] = 'Wählen Sie aus vordefinierten Farbschemata, die verschiedene Fortschrittsstufen zeigen. Jedes Theme verwendet 5 Farben, die vom niedrigsten (0-20%) bis zum höchsten (80-100%) Leistungsstand reichen. Die Vorschau zeigt, wie jedes Theme in Ihren Fortschrittsbalken aussehen wird.';
 $string['usersettings'] = 'CompViz-Einstellungen';
-$string['usersettings_desc'] = 'Konfigurieren Sie Ihre persönlichen CompViz-Einstellungen. Diese Einstellungen betreffen nur Ihr Konto und ändern nicht, wie andere Benutzer den Block sehen.';
+$string['usersettings_desc'] = 'Konfigurieren Sie Ihre persönlichen CompViz-Einstellungen. Diese Einstellungen betreffen nur Ihr Konto und ändern nicht, wie andere Benutzer den Block sehen. Verwenden Sie diese Optionen, um anzupassen, welche Fähigkeiten angezeigt werden und wie Fortschrittsbalken eingefärbt sind.';
 
 // Privacy provider strings
 $string['privacy:metadata:block_compviz'] = 'Der CompViz-Block speichert Benutzereinstellungen zum Aktivieren des Blocks und zum Anzeigen abgeschlossener Fähigkeiten.';
@@ -67,15 +68,15 @@ $string['privacy:metadata:block_compviz_show_completed'] = 'Benutzereinstellung 
 $string['colormode'] = 'Farbmodus';
 $string['colormode_help'] = 'Wählen Sie, ob der Block die Theme-Farben Ihrer Seite verwenden soll (empfohlen) oder ob Sie eigene Farbwerte verwenden möchten. Änderungen wirken nur in Ihrer persönlichen Ansicht.';
 $string['custom_color_1'] = 'Fortschrittsfarbe (höchste)';
-$string['custom_color_1_help'] = 'Höchste Leistungsfarbe (mindestens 80%). Wählen Sie mit dem Farbwähler.';
+$string['custom_color_1_help'] = 'Farbe für ausgezeichneten Fortschritt (80-100% abgeschlossen). Diese Farbe repräsentiert Beinahe-Vollendung oder Meisterschaft. Typischerweise funktionieren grüne oder helle positive Farben gut.';
 $string['custom_color_2'] = 'Fortschrittsfarbe (hoch)';
-$string['custom_color_2_help'] = 'Zweithöchste Leistungsfarbe (mindestens 60%). Wählen Sie mit dem Farbwähler.';
+$string['custom_color_2_help'] = 'Farbe für guten Fortschritt (60-79% abgeschlossen). Zeigt starke Fortschritte. Oft hellgrün, blau oder positive Mitteltöne.';
 $string['custom_color_3'] = 'Fortschrittsfarbe (mittel)';
-$string['custom_color_3_help'] = 'Mittlere Leistungsfarbe (mindestens 40%). Wählen Sie mit dem Farbwähler.';
+$string['custom_color_3_help'] = 'Farbe für moderaten Fortschritt (40-59% abgeschlossen). Zeigt an, dass Sie auf halbem Weg sind. Neutrale Farben wie Gelb oder Orange funktionieren gut.';
 $string['custom_color_4'] = 'Fortschrittsfarbe (niedrig)';
-$string['custom_color_4_help'] = 'Zweittiefste Leistungsfarbe (mindestens 20%). Wählen Sie mit dem Farbwähler.';
+$string['custom_color_4_help'] = 'Farbe für frühen Fortschritt (20-39% abgeschlossen). Zeigt erste unternommene Schritte. Oft bernsteinfarben, hellorange oder warme Neutraltöne.';
 $string['custom_color_5'] = 'Fortschrittsfarbe (sehr niedrig)';
-$string['custom_color_5_help'] = 'Niedrigste Leistungsfarbe (unter 20%). Wählen Sie mit dem Farbwähler.';
+$string['custom_color_5_help'] = 'Farbe für minimalen Fortschritt (0-19% abgeschlossen). Zeigt gerade erst begonnen oder noch nicht versucht. Typischerweise rot, grau oder kühle Töne, um benötigte Arbeit zu zeigen.';
 $string['custom_color_completed'] = 'Farbe für bestanden';
 $string['custom_color_failed'] = 'Farbe für nicht bestanden';
 $string['custom_color_help'] = 'Primäre Farbe, verwendet wenn benutzerdefinierte Farben aktiviert sind.';

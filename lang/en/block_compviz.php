@@ -47,15 +47,16 @@ $string['select_leo_help'] = 'Select a Grading Category for the skills overview 
 
 // User settings form strings
 $string['appearance'] = 'Appearance';
-$string['color_settings_desc'] = 'Appearance settings control how progress bars and charts are colored in your view. You can use site theme colors or create a personal palette using the color pickers below.';
+$string['color_settings_desc'] = 'Appearance settings control how progress bars and charts are colored in your view. Theme colors adapt automatically to your Moodle site design (recommended for consistency). Custom colors let you create a personal palette - useful for accessibility needs, color-blindness adjustments, or personal preference.';
+$string['color_settings_note'] = 'Note: Color choices can significantly impact readability. Consider contrast and accessibility when selecting custom colors.';
 $string['settingsnotsaved'] = 'User settings could not be saved.';
 $string['settingssaved'] = 'User settings saved.';
-$string['show_completed'] = 'Show completed skills';
-$string['show_completed_help'] = 'When enabled, completed skills will be visible in your Skills Overview. When disabled, only incomplete or in-progress skills are shown so you can focus on outstanding items.';
+$string['show_completed'] = 'Show completed LEOs';
+$string['show_completed_help'] = 'Learning Outcome Categories (LEOs) represent major skill groups in your course. When enabled, fully completed LEOs remain visible in your overview. When disabled, completed LEOs are hidden automatically, allowing you to focus only on skills that still need work. Note: Individual activities (µLEOs) within a LEO are always shown regardless of this setting.';
 $string['theme'] = 'Color theme';
-$string['theme_help'] = 'Choose a saved color theme to render progress bars. This option is only active when "Use theme colors" is selected in the Color mode setting.';
+$string['theme_help'] = 'Select from predefined color schemes that show different progress levels. Each theme uses 5 colors ranging from lowest (0-20%) to highest (80-100%) achievement. The preview shows how each theme will look in your progress bars.';
 $string['usersettings'] = 'CompViz settings';
-$string['usersettings_desc'] = 'Configure your personal CompViz preferences. These settings only affect your account and do not change how other users see the block.';
+$string['usersettings_desc'] = 'Configure your personal CompViz preferences. These settings only affect your account and do not change how other users see the block. Use these options to customize which skills are shown and how progress bars are colored.';
 
 // Privacy provider strings
 $string['privacy:metadata:block_compviz'] = 'The Competence Visualization block stores user preferences for enabling the block and showing completed skills.';
@@ -66,15 +67,15 @@ $string['privacy:metadata:block_compviz_show_completed'] = 'The user preference 
 $string['colormode'] = 'Color mode';
 $string['colormode_help'] = 'Choose whether the block should use your site theme colors (recommended) or allow you to enter custom hex color values. Changes here affect only your personal view.';
 $string['custom_color_1'] = 'Progress Color highest';
-$string['custom_color_1_help'] = 'Highest achievement color (at least 80% done). Choose using the color picker.';
+$string['custom_color_1_help'] = 'Color for excellent progress (80-100% complete). This color represents near-completion or mastery. Typically green or bright positive colors work well.';
 $string['custom_color_2'] = 'Progress Color high';
-$string['custom_color_2_help'] = 'Second-highest achievement color (at least 60% done). Choose using the color picker.';
+$string['custom_color_2_help'] = 'Color for good progress (60-79% complete). Shows strong advancement. Often light green, blue, or positive mid-tones.';
 $string['custom_color_3'] = 'Progress Color medium';
-$string['custom_color_3_help'] = 'Medium achievement color (at least 40% done). Choose using the color picker.';
+$string['custom_color_3_help'] = 'Color for moderate progress (40-59% complete). Indicates you are halfway there. Neutral colors like yellow or orange work well.';
 $string['custom_color_4'] = 'Progress Color low';
-$string['custom_color_4_help'] = 'Second-lowest achievement color (at least 20% done). Choose using the color picker.';
+$string['custom_color_4_help'] = 'Color for early progress (20-39% complete). Shows initial steps taken. Often amber, light orange, or warm neutrals.';
 $string['custom_color_5'] = 'Progress Color lowest';
-$string['custom_color_5_help'] = 'Lowest achievement color (below 20% done). Choose using the color picker.';
+$string['custom_color_5_help'] = 'Color for minimal progress (0-19% complete). Indicates just started or not yet attempted. Typically red, gray, or cool tones to show work needed.';
 $string['custom_color_completed'] = 'Passed color';
 $string['custom_color_failed'] = 'Failed color';
 $string['custom_color_help'] = 'Primary hex color used when custom colors are enabled.';

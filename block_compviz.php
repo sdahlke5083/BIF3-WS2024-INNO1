@@ -99,24 +99,24 @@ class block_compviz extends block_base
         // cmid -> completionstate aus {course_modules_completion} via unser DB-Helper.
         $completionmap = block_compviz_get_cm_completion_states_for_user($quizcmids, $USER->id);
 
-        foreach ($skills as $skill) {
+        foreach ($skills as $key => $skill) {
             $skill->name = trim(preg_replace('/^\p{So}+\s*/u', '', $skill->name));
             
             $progress = $this->block_compviz_get_progress($skill->finalgrade, $skill->grademax);
             $skill->progress = $progress;
             $skill->color = $this->get_progress_color($progress, $USER->id);
             
-            foreach ($skill->grade_items as $key => $subSkill) {
+            // Skip entire skill if it's completed and showCompleted is false
+            if ($options->showCompleted == false && $progress >= 100) {
+                unset($skills[$key]);
+                continue;
+            }
+            
+            foreach ($skill->grade_items as $subSkill) {
                 $progress = $this->block_compviz_get_progress($subSkill->finalgrade, $subSkill->grademax);
-                if ($options->showCompleted == false && $progress >= 100) {
-                    // Skill ist abgeschlossen, also nicht anzeigen
-                    unset($skill->grade_items[$key]);
-                }
-                else{
-                    $subSkill->progress = $progress;
-                    $subSkill->color = $this->get_progress_color($progress, $USER->id);
-                    $subSkill->name = trim(preg_replace('/^\p{So}+\s*/u', '', $subSkill->name));
-                }
+                $subSkill->progress = $progress;
+                $subSkill->color = $this->get_progress_color($progress, $USER->id);
+                $subSkill->name = trim(preg_replace('/^\p{So}+\s*/u', '', $subSkill->name));
                 if (!empty($subSkill->cmid) && !empty($subSkill->itemmodule) && $subSkill->itemmodule === 'quiz') {
                     $state = $completionmap[$subSkill->cmid] ?? COMPLETION_INCOMPLETE;
 

@@ -88,6 +88,7 @@ class user_form extends dynamic_form
         // Appearance section: explain color options and grouping.
         $mform->addElement('header', 'user_settings_appearance', get_string('appearance', 'block_compviz'));
         $mform->addElement('static', 'color_settings_desc', '', get_string('color_settings_desc', 'block_compviz'));
+        $mform->addElement('static', 'color_settings_note', '', '<em>' . get_string('color_settings_note', 'block_compviz') . '</em>');
 
         // Add a radio group to choose between theme or custom color.
         $radioarray = [];
@@ -97,14 +98,24 @@ class user_form extends dynamic_form
         $mform->setDefault('color_mode', 'theme');
         $mform->addHelpButton('color_mode_group', 'colormode', 'block_compviz');
 
-        // Add dropdown to select what Color theme to use
-        $options = block_compviz_get_color_themes();
-        $options = $this->convert_to_choicelist($options);
-        $mform->addElement('choicedropdown', 'theme', get_string('theme', 'block_compviz'), $options );
-        $mform->setType('theme', PARAM_INT);
+        // Add radio buttons to select what Color theme to use
+        $themes = block_compviz_get_color_themes();
+        $themearray = [];
+        foreach ($themes as $key => $theme) {
+            $preview = '<div class="theme-preview-wrapper">' .
+                       '<span class="color-preview-box" style="--bg-color:#' . $theme['color5'] . ';">0-20%</span>' .
+                       '<span class="color-preview-box" style="--bg-color:#' . $theme['color4'] . ';">20-40%</span>' .
+                       '<span class="color-preview-box" style="--bg-color:#' . $theme['color3'] . ';">40-60%</span>' .
+                       '<span class="color-preview-box" style="--bg-color:#' . $theme['color2'] . ';">60-80%</span>' .
+                       '<span class="color-preview-box" style="--bg-color:#' . $theme['color1'] . ';">80-100%</span>' .
+                       '</div>';
+            $themearray[] = $mform->createElement('radio', 'theme', '', 
+                '<div class="theme-option"><strong>' . $theme['name'] . '</strong>' . $preview . '</div>', $key);
+        }
+        $mform->addGroup($themearray, 'theme_group', get_string('theme', 'block_compviz'), [' '], false);
         $mform->setDefault('theme', 1);
-        #$mform->addHelpButton('theme', 'theme', 'block_compviz');
-        $mform->hideIf('theme', 'color_mode', 'neq', 'theme');
+        $mform->addHelpButton('theme_group', 'theme', 'block_compviz');
+        $mform->hideIf('theme_group', 'color_mode', 'neq', 'theme');
         
         // add 5 custom color options as text fields for custom color selection and group them.
         for ($i = 1; $i <= 5; $i++) {
@@ -170,28 +181,5 @@ class user_form extends dynamic_form
     protected function get_page_url_for_dynamic_submission(): \moodle_url
     {
         return new \moodle_url('/course');
-    }
-
-    private function convert_to_choicelist($array)
-    {
-
-        // Define the options for the dropdown list.
-        $choicelist = new \core\output\choicelist();
-        
-        foreach ($array as $key => $item) {
-            $choicelist->add_option(
-                $key,
-                $item['name'],
-                [
-                    'description' => '0%'.
-                                     '<span class="color-preview-box" style="--bg-color:#' . $item['color5'] . ';">20%</span>' .
-                                     '<span class="color-preview-box" style="--bg-color:#' . $item['color4'] . ';">40%</span>' .
-                                     '<span class="color-preview-box" style="--bg-color:#' . $item['color3'] . ';">60%</span>' .
-                                     '<span class="color-preview-box" style="--bg-color:#' . $item['color2'] . ';">80%</span>' .
-                                     '<span class="color-preview-box" style="--bg-color:#' . $item['color1'] . ';">100%</span>',
-                ]
-            );
-        }
-        return $choicelist;
     }
 }
