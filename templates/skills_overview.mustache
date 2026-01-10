@@ -23,11 +23,13 @@
     Styles and widths are responsive, no fixed widths used for skill/sub-skill bars.
 }}
 
-<div class="text-center mb-3">{{header}}</div>
-<div class="d-flex flex-column">
+<div class="text-center mb-3 hidden">{{header}}</div>
+<div class="compviz-block d-flex flex-column">
     <!-- Total progress -->
-    <div class="justify-content-center mb-4 text-center w-100" style="max-width: 280px;">
-        <div class="text-muted">Total</div>
+    <div class="card p-3 mb-4 text-center w-100" style="max-width: 280px;">
+        <div class="h6 fw-bold mb-2">
+            <i class="fa fa-trophy" aria-hidden="true"></i> Total
+        </div>
         <div class="pb pb-bar mb-2" style="--pb-progress: {{totalProgress}}%;--pb-fill-color: {{totalColor}};height: 40px;">
             <span class="pb-text bold" data-text="{{totalProgress}}%">{{totalProgress}}%</span>
         </div>
