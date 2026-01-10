@@ -28,28 +28,67 @@
 namespace block_compviz\form;
 use core_form\dynamic_form;
 use MoodleQuickForm;
+use core\context\user as context_user;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once "{$CFG->dirroot}/blocks/compviz/db/display_data.php";
 
-
 class user_form extends dynamic_form
 {
+
+    /**
+     * Display the form using a custom QuickForm renderer so we can intercept
+     * colorpicker elements and render them with the plugin template.
+     */
+    public function display() {
+        global $CFG;
+        require_once($CFG->dirroot . '/blocks/compviz/classes/form/custom_quickform_renderer.php');
+
+        $renderer = new \block_compviz\form\custom_quickform_renderer();
+
+        // The QuickForm object is stored in $this->_form by dynamic_form.
+        if (isset($this->_form) && is_object($this->_form)) {
+            $this->_form->accept($renderer);
+            echo $renderer->toHtml();
+            return;
+        }
+
+        // Fallback: use parent display if something unexpected occurs.
+        parent::display();
+    }
 
     public function definition()
     {
         global $CFG;
         $mform = $this->_form;
 
-        // Add a header.
-        $mform->addElement('header', 'user_settings', get_string('pluginname', 'block_compviz'));
+        // Add a color picker for custom color selection (hex code).
+        // register the custom color picker element type.
+        MoodleQuickForm::registerElementType(
+            // This is the element name used in the `addElement()` function.
+            'bccolorpicker',
+            // The path to the class file.
+            "{$CFG->dirroot}/blocks/compviz/classes/form/colorpicker_form_element.php",
+            // The class name that implements the element.
+            'MoodleQuickForm_bccolorpicker'
+        );
+
+
+        // Add a header and short description for the user settings.
+        $mform->addElement('header', 'user_settings', get_string('usersettings', 'block_compviz'));
+        $mform->addElement('static', 'usersettings_desc', '', get_string('usersettings_desc', 'block_compviz'));
 
         // Add a checkbox for showing completed skills.
         $mform->addElement('checkbox', 'show_completed', get_string('show_completed', 'block_compviz'));
         $mform->setDefault('show_completed', 1);
         $mform->addHelpButton('show_completed', 'show_completed', 'block_compviz');
 
+
+        // Appearance section: explain color options and grouping.
+        $mform->addElement('header', 'user_settings_appearance', get_string('appearance', 'block_compviz'));
+        $mform->addElement('static', 'color_settings_desc', '', get_string('color_settings_desc', 'block_compviz'));
+        $mform->addElement('static', 'color_settings_note', '', '<em>' . get_string('color_settings_note', 'block_compviz') . '</em>');
 
         // Add a radio group to choose between theme or custom color.
         $radioarray = [];
@@ -59,17 +98,28 @@ class user_form extends dynamic_form
         $mform->setDefault('color_mode', 'theme');
         $mform->addHelpButton('color_mode_group', 'colormode', 'block_compviz');
 
-        // Add dropdown to select what Color theme to use
-        $options = block_compviz_get_color_themes();
-        $mform->addElement('select', 'theme', get_string('theme', 'block_compviz'), $options );
-        $mform->setType('theme', PARAM_INT);
+        // Add radio buttons to select what Color theme to use
+        $themes = block_compviz_get_color_themes();
+        $themearray = [];
+        foreach ($themes as $key => $theme) {
+            $preview = '<div class="theme-preview-wrapper">' .
+                       '<span class="color-preview-box" style="--bg-color:#' . $theme['color5'] . ';">0-20%</span>' .
+                       '<span class="color-preview-box" style="--bg-color:#' . $theme['color4'] . ';">20-40%</span>' .
+                       '<span class="color-preview-box" style="--bg-color:#' . $theme['color3'] . ';">40-60%</span>' .
+                       '<span class="color-preview-box" style="--bg-color:#' . $theme['color2'] . ';">60-80%</span>' .
+                       '<span class="color-preview-box" style="--bg-color:#' . $theme['color1'] . ';">80-100%</span>' .
+                       '</div>';
+            $themearray[] = $mform->createElement('radio', 'theme', '', 
+                '<div class="theme-option"><strong>' . $theme['name'] . '</strong>' . $preview . '</div>', $key);
+        }
+        $mform->addGroup($themearray, 'theme_group', get_string('theme', 'block_compviz'), [' '], false);
         $mform->setDefault('theme', 1);
-        $mform->addHelpButton('theme', 'theme', 'block_compviz');
-        $mform->hideIf('theme', 'color_mode', 'neq', 'theme');
+        $mform->addHelpButton('theme_group', 'theme', 'block_compviz');
+        $mform->hideIf('theme_group', 'color_mode', 'neq', 'theme');
         
         // add 5 custom color options as text fields for custom color selection and group them.
         for ($i = 1; $i <= 5; $i++) {
-            $mform->addElement('text', "custom_color_$i", get_string("custom_color_$i", 'block_compviz'));
+            $mform->addElement('bccolorpicker', "custom_color_$i", get_string("custom_color_$i", 'block_compviz'));
             $mform->setType("custom_color_$i", PARAM_RAW_TRIMMED);
             $colorindex = $i - 1;
             $mform->setDefault("custom_color_$i", "#{$colorindex}0ff{$colorindex}0");
@@ -77,25 +127,15 @@ class user_form extends dynamic_form
             $mform->hideIf("custom_color_$i", 'color_mode', 'neq', 'custom');
         }
 
-        // Add a color picker for custom color selection (hex code).
-        // register the custom color picker element type.
-        MoodleQuickForm::registerElementType(
-            // This is the element name used in the `addElement()` function.
-            'configcolourpicker',
-            // The path to the class file.
-            "{$CFG->dirroot}/blocks/compviz/classes/form/colorpicker_form_element.php",
-            // The class name that implements the element.
-            'colorpicker_form_element'
-        );
-        
         // Add a button to save the settings.
         /* $this->add_action_buttons(); */
+
     }
 
     protected function get_context_for_dynamic_submission(): \context
     {
         global $USER;
-        return \context_user::instance($USER->id);
+        return context_user::instance($USER->id);
     }
 
     public function check_access_for_dynamic_submission(): void

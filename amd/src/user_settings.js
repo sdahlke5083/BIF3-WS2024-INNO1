@@ -21,7 +21,7 @@ define([
             const modalForm = new ModalForm({
                 formClass: 'block_compviz\\form\\user_form',
                 // keine zusätzlichen args nötig – könnten hier übergeben werden
-                modalConfig: { title: link.dataset.title },
+                modalConfig: { title: link.dataset.title, className: 'block_compviz_user_form' },
                 returnFocus: link
             });
 
