@@ -403,6 +403,7 @@ $mform->addHelpButton('custom_color_1', 'custom_color_1', 'block_compviz');
 
 ### 5.1 Funktional
 - [ ] **Admin-Interface für Theme-Verwaltung**: Derzeit sind Themes nur via DB editierbar
+- [ ] **Farbblindheitsfreundliche Presets**: Zusätzliche vordefinierte Farbthemes für gängige Farbsehschwächen (z.B. Deuteranopie/Protanopie/Tritanopie)
 - [ ] **Export-Funktion**: CSV/PDF-Export des Kompetenzüberblicks
 - [ ] **Lehrer-Dashboard**: Aggregierte Ansicht für alle Studierenden eines Kurses
 - [ ] **Completion-Tracking**: Bessere Integration mit Moodle Activity Completion
