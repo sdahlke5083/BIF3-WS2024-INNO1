@@ -2,6 +2,8 @@
 
 The **Competence Visualization (CompViz)** block is a Moodle plugin that provides students and teachers with a visual overview of learning progress and competency development within a course. It translates Moodle's gradebook structure into an intuitive, color-coded display of Learning Outcomes (LEOs) and Micro Learning Outcomes (µLEOs).
 
+[![Build, Package & Release on Tag](https://github.com/sdahlke5083/BIF3-WS2024-INNO1/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/sdahlke5083/BIF3-WS2024-INNO1/actions/workflows/main.yml)
+
 ## Project Information
 
 **Current Version:** v0.0.3-alpha.5  
@@ -38,17 +40,17 @@ In Moodle, **µLEOs** can be represented as individual **grade items**, each tie
 
 ## Documentation
 
-### Installation [![Docs](https://img.shields.io/badge/Docs-Installation_as_Admin-blue)]
+### Installation
 - **[Installation Guide (English)](Docs/Compviz_Install_EN.md)** - Complete installation instructions for administrators
 - **[Installation Guide (Deutsch)](Docs/Compviz_Install_DE.md)** - Vollständige Installationsanleitung für Administratoren
   
 **Requirements:**
-- Moodle 4.1 or newer
-- PHP 8.0 or newer
+- ![Moodle 4.1 or newer](https://img.shields.io/badge/Moodle-4.1%2B-blue?logo=moodle)
+- ![PHP 8.0 or newer](https://img.shields.io/badge/PHP-8.0%2B-blue?logo=php)
 
 ### User Guides
 - **[User Guide (English)](Docs/Compviz_UserGuide_EN.md)** - How to use CompViz as a student or teacher
-- **User Guide (Deutsch)** - Available in German language pack
+- **User Guide (Deutsch)** - Not yet available
 
 ### Development & Handover
 - **[Übergabeprotokol (Deutsch)](Docs/Übergabeprotokol.md)** - Comprehensive handover document for future development teams
@@ -92,3 +94,4 @@ This plugin is part of an educational project at Technikum Wien. If you're a fut
 4. Document your changes and learnings in the Übergabeprotokol
 
 For questions or issues, please use [GitHub Issues](https://github.com/sdahlke5083/BIF3-WS2024-INNO1/issues).
+
