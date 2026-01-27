@@ -1063,6 +1063,9 @@ php admin/tool/phpcs/cli/check.php --standard=moodle blocks/compviz/
 - **Autoren:**
   - Sebastian Dahlke <if23b234@technikum-wien.at>
   - Mateo Rašo <if23b100@technikum-wien.at>
+  - Sophie Hauser <if23b285@technikum-wien.at>
+  - Sophie Wiesner <if23b290@technikum-wien.at>
+  - Andor István Kurucz <if23b110@technikum-wien.at>
 - **Institution:** Technikum Wien
 - **Zeitraum:** WS2024 - SS2026 (INNO1, INNO2, INNO3)
 - **Finale Version:** v0.0.3-alpha.7 (Sprint 7, INNO3)
