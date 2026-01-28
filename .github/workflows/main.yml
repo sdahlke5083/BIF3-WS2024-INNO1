@@ -136,7 +136,6 @@ jobs:
             --exclude ".git" \
             --exclude ".github" \
             --exclude "node_modules" \
-            --exclude "build" \
             --exclude "dist" \
             --exclude ".gitignore" \
             --exclude ".vscode" \
